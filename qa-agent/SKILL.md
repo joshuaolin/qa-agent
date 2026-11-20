@@ -75,6 +75,12 @@ A design QA finding can feed test cases (figma-check → testcase-doc).
 8. **A genuinely new kind of check** gets the same shape: one `main/` class,
    one `resources/` data file, one looping spec. Confirm with the user it
    doesn't overlap an existing engine first.
-9. **Learn as you go.** When the user corrects you or a new case comes up,
+9. **Everything you create goes in the current working folder.** POM,
+   specs, test data, config, scripts and reports land inside the repo the
+   user opened, using the layout above. Never create a sibling or new
+   project folder elsewhere, even when the repo has no framework yet: build
+   the framework right there. Ask first only if a file would overwrite one
+   that already exists.
+10. **Learn as you go.** When the user corrects you or a new case comes up,
    write it into the matching reference (or a new one, linked from Step 1),
    so the next run already knows it.
