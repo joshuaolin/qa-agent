@@ -26,10 +26,26 @@ updated `.md`, so the next run already knows it.
 | `figma-check.md` (+ rules, report template) | Compares a live page to Figma by computed CSS, writes a findings Excel | "Validate: figma = <link>, environment = <url>" |
 | `testcase-doc.md` | Writes manual test cases from a ticket into a copy of your Excel tracker | "Write test cases for PROJ-123" |
 
+## Companion skill: joshtack-agent
+
+`joshtack-agent/` is the general coding partner that `qa-agent` builds on. It
+holds the rules for every project, QA or not: OOP and config-driven code with
+no comments, no side effects while testing, short Taglish replies that end
+with the exact command to run, evidence-based debugging, and node-cron
+schedulers on Windows.
+
+| Reference | When it loads |
+|---|---|
+| `code-style.md` | Writing or changing any code or script |
+| `safety.md` | Changes to an existing project, cleanup, delete, test runs |
+| `communication.md` | Replies, explanations, handing over commands |
+| `investigate.md` | Anything broken, slow or flaky |
+| `schedulers-windows.md` | Cron jobs and schedulers on a Windows laptop |
+
 ## Install
 
-1. Copy the `qa-agent/` folder into your repo at `.claude/skills/qa-agent/`
-   (or into `~/.claude/skills/` to use it in every project).
+1. Copy the `qa-agent/` and `joshtack-agent/` folders into your repo at
+   `.claude/skills/` (or into `~/.claude/skills/` to use them in every project).
 2. Open `qa-agent/SKILL.md` and fill in **Project settings** (artifacts
    folder, Excel template, preview origin, schedule).
 3. For the Figma check, install its tools once:
