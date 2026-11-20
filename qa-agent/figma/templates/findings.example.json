@@ -1,0 +1,56 @@
+{
+  "org": "Acme QA Team",
+  "project": "Example project",
+  "site": "Example",
+  "component": "Contact Form",
+  "environment": "https://staging.example.com/contact",
+  "viewport": "1440x900 desktop, Chromium",
+  "figma": "Frame 'Contact / Desktop' (link to selection)",
+  "ticket": "PROJ-123",
+  "runDate": "2026-01-01",
+  "verdict": "NOT at design parity. Top issue: primary CTA uses the wrong brand color (FE-01).",
+  "matches": [
+    "Card width, radius and padding",
+    "Heading font size and weight"
+  ],
+  "notCovered": [
+    "Hover / focus / active states",
+    "Viewports other than 1440px",
+    "Icon and image pixel content"
+  ],
+  "diffNotes": {
+    "cta-primary.background-color": "Yes – FE-01"
+  },
+  "findings": [
+    {
+      "id": "FE-01",
+      "severity": "High",
+      "status": "Fail",
+      "title": "Primary CTA uses #2563eb instead of the brand color #1b4d8f",
+      "area": "Contact form / Color",
+      "live": "form button[type=submit]",
+      "layer": "Button/Primary",
+      "property": "background-color",
+      "expected": "#1b4d8f",
+      "actual": "#2563eb. compare.mjs: FAIL cta-primary.background-color.",
+      "remarks": "Looks like a framework default rather than the brand token.",
+      "env": "evidence/cta-live.png",
+      "figma": "evidence/cta-figma.png"
+    },
+    {
+      "id": "FE-02",
+      "severity": "Low",
+      "status": "Pending Figma",
+      "title": "Field labels are 13px; design value not available yet",
+      "area": "Contact form / Typography",
+      "live": "form label",
+      "layer": "Input/Label",
+      "property": "font-size",
+      "expected": "Pending: Figma not reachable in this run",
+      "actual": "13px",
+      "remarks": "Re-check once the frame can be opened.",
+      "env": "evidence/label-live.png",
+      "figmaPending": "Pending: Figma blocked (node 1:234). Export the frame as SVG to fill this row."
+    }
+  ]
+}

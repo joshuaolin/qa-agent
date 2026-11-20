@@ -1,0 +1,10 @@
+{
+  "name": "qa-figma-check-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Playwright inspection and deterministic style diff for the qa-figma-check skill",
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

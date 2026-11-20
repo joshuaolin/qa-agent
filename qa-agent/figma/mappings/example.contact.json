@@ -1,0 +1,15 @@
+{
+  "_comment": "Template. Copy to <page-slug>.json, replace the url and elements, delete the _comment keys. `id` is any stable slug you choose; it joins figma.json and live.json.",
+  "page": "contact",
+  "url": "https://staging.example.com/contact",
+  "viewport": 1440,
+  "elements": [
+    { "id": "hero-title",   "figmaLayer": "Hero/Heading",         "selector": "main h1" },
+    { "id": "hero-sub",     "figmaLayer": "Hero/Subheading",      "selector": "main h1 + p" },
+    { "id": "form-card",    "figmaLayer": "Contact/Form Card",    "selector": "form" },
+    { "id": "field-name",   "figmaLayer": "Input/Default",        "selector": "form input[name=name]" },
+    { "id": "field-email",  "figmaLayer": "Input/Default",        "selector": "form input[name=email]" },
+    { "id": "cta-primary",  "figmaLayer": "Button/Primary",       "selector": "form button[type=submit]" },
+    { "id": "footer",       "figmaLayer": "Footer/Desktop",       "selector": "footer" }
+  ]
+}
