@@ -85,3 +85,7 @@ the requester can tell ticket coverage from judgement calls at a glance.
 - A Jira URL on an authenticated instance cannot be read with a plain web
   fetch (it returns the login page). Say so instead of guessing, and ask for
   a screenshot or paste, or for the Atlassian connector to be authorized.
+- Try the Atlassian connector first (a ToolSearch for `atlassian jira`). Only
+  if no Jira tool loads, ask for the paste. Meanwhile, copy the template and
+  read the latest sibling `TC-<KEY>.xlsx` so the rows match its style.
+- Data rows go in the `Module1` sheet of the copy.

@@ -14,15 +14,21 @@ every time.** Don't work from memory of it. Tools for design QA live in
 
 ## Project settings
 
-Fill these in once for your project. Every reference uses these names.
+Filled in for Josh's setup. Use these values as they are; don't ask for
+them again. Anyone else using this skill: replace the Value column with yours.
 
-| Setting | Meaning | Example |
+| Setting | Meaning | Value |
 | --- | --- | --- |
-| `ARTIFACTS_DIR` | Folder for Excel deliverables (test cases, FE QA) | `C:\Users\<you>\Desktop\QA Artifacts` |
-| `TC_TEMPLATE` | Master test case workbook, never edited directly | `<ARTIFACTS_DIR>\TC.xlsx` |
-| `ORG_TITLE` | Title line printed on every Excel deliverable | `Acme QA Team` |
-| `PROD_ORIGIN` / `PREVIEW_ORIGIN` | Origins compared by visual compare | `https://www.example.com` / `https://preview.example.com` |
-| `SCHEDULE` | Unattended runs the agent must not collide with | `08:30 daily smoke`, `11:30 regional batch` |
+| `ARTIFACTS_DIR` | Folder for Excel deliverables (test cases, FE QA) | `C:\Users\joshua.olin\Desktop\SDE Artifacts` |
+| `TC_TEMPLATE` | Master test case workbook, never edited directly | `<ARTIFACTS_DIR>\TC.xlsx` (sheets: Revision History, Dashboard, Module1, Reference) |
+| `ORG_TITLE` | Title line printed on every Excel deliverable | `ESSILORLUXOTTICA GLOBAL IT SHARED SERVICES CENTERS` |
+| `PROD_ORIGIN` / `PREVIEW_ORIGIN` | Origins compared by visual compare | `https://www.allaboutvision.com` / `https://preview-allaboutvision.luxgroup.net` |
+| `JIRA` | Ticket source for test cases | `https://luxotticaretail.atlassian.net`, project `AAV`. Needs the Atlassian connector; without it, ask for a paste or screenshot |
+| `SCHEDULE` | Unattended runs the agent must not collide with | none in this repo |
+
+Test case deliverables go to `ARTIFACTS_DIR`, not the repo: one copy of
+`TC_TEMPLATE` per ticket, named `TC-<KEY without dash>.xlsx`
+(`AAV-2235` → `TC-AAV2235.xlsx`), next to the earlier ones.
 
 ## Step 1: load the knowledge for the ask
 
@@ -77,7 +83,8 @@ A design QA finding can feed test cases (figma-check → testcase-doc).
    doesn't overlap an existing engine first.
 9. **Everything you create goes in the current working folder.** POM,
    specs, test data, config, scripts and reports land inside the repo the
-   user opened, using the layout above. Never create a sibling or new
+   user opened, using the layout above. The one exception is Excel
+   deliverables, which go to `ARTIFACTS_DIR`. Never create a sibling or new
    project folder elsewhere, even when the repo has no framework yet: build
    the framework right there. Ask first only if a file would overwrite one
    that already exists.
