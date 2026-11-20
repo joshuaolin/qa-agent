@@ -28,7 +28,7 @@ updated `.md`, so the next run already knows it.
 
 ## Companion skill: joshtack-agent
 
-`joshtack-agent/` is the general coding partner that `qa-agent` builds on. It
+`.claude/skills/joshtack-agent/` is the general coding partner that `qa-agent` builds on. It
 holds the rules for every project, QA or not: OOP and config-driven code with
 no comments, no side effects while testing, short Taglish replies that end
 with the exact command to run, evidence-based debugging, and node-cron
@@ -44,18 +44,31 @@ schedulers on Windows.
 
 ## Install
 
-1. Copy the `qa-agent/` and `joshtack-agent/` folders into your repo at
-   `.claude/skills/` (or into `~/.claude/skills/` to use them in every project).
-2. Open `qa-agent/SKILL.md` and fill in **Project settings** (artifacts
-   folder, Excel template, preview origin, schedule).
-3. For the Figma check, install its tools once:
+Both skills ship pre-installed. They live in `.claude/skills/`, the folder
+Claude Code scans when it opens a project, so there is nothing to copy:
+
+1. Clone the repo and open the folder in Claude Code:
+   ```
+   git clone https://github.com/joshuaolin/qa-agent.git
+   cd qa-agent
+   claude
+   ```
+   Type `/` and `/qa-agent` and `/joshtack-agent` show up in the suggestions.
+   If they don't, start a new session or reload the VS Code window.
+2. To use them in another project, copy `.claude/skills/qa-agent/` and
+   `.claude/skills/joshtack-agent/` into that project's `.claude/skills/`,
+   or into `~/.claude/skills/` for every project. A copy doesn't update
+   itself: copy again after you pull changes.
+3. Open `.claude/skills/qa-agent/SKILL.md` and fill in **Project settings**
+   (artifacts folder, Excel template, preview origin, schedule).
+4. For the Figma check, install its tools once:
    ```
    cd .claude/skills/qa-agent/figma/scripts
    npm install
    npx playwright install chromium
    pip install openpyxl pillow
    ```
-4. In Claude Code, type `/qa-agent` and describe the task in plain words.
+5. In Claude Code, type `/qa-agent` and describe the task in plain words.
 
 ## Expected repo layout
 
@@ -74,9 +87,13 @@ If your repo looks different, edit the references. They are plain markdown.
 
 ## Make it yours
 
-- **Add a feature map** per site: copy `references/feature-maps/_template.md`.
-- **Add a new skill:** write `references/<task>.md` with a `> Use when:` line
-  at the top, then add one row to the table in `SKILL.md`, Step 1.
+- **Add a feature map** per site: copy
+  `.claude/skills/qa-agent/references/feature-maps/_template.md`.
+- **Add a new skill:** write `.claude/skills/qa-agent/references/<task>.md`
+  with a `> Use when:` line at the top, then add one row to the table in
+  `SKILL.md`, Step 1.
+- **A whole new agent:** add a folder `.claude/skills/<name>/SKILL.md`. Every
+  skill must sit directly under `.claude/skills/` or it won't be suggested.
 - **Keep it honest:** whenever the agent gets something wrong, fix the
   reference, not just the output.
 
