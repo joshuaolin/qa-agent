@@ -61,6 +61,21 @@ formatter later strips it (case `edit-tool-wrote-literal-bom`).
 - After touching one, check the bytes (`EF BB BF` for U+FEFF), not just
   that it runs.
 
+## Editing files from Windows PowerShell
+
+PowerShell 5.1 corrupts text it round-trips (case
+`powershell-text-edit-corruption`). `Get-Content` reads ANSI, so `→` comes
+back as `â†’`. `-replace` ignores case, so `"Locale"` also hits `"locale"`.
+`Set-Content -Encoding utf8` adds a BOM that `json.loads` rejects.
+
+- Change code and data files with the Edit/Write tools, or with Python using
+  an explicit encoding.
+- If PowerShell is unavoidable, cover all three: read with
+  `[IO.File]::ReadAllText(path)` (or `Get-Content -Raw -Encoding utf8`),
+  replace with `-creplace`, and write with
+  `[IO.File]::WriteAllText(path, text, [Text.UTF8Encoding]::new($false))`.
+- Read JSON with `utf-8-sig` so a stray BOM can't break a run.
+
 ## Shape of a finished change
 
 - Data change only → done after one live run of that item.
