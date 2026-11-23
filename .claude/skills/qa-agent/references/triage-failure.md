@@ -33,6 +33,7 @@ locator bugs.
 | Button not rendered yet (appears after fields are filled) | ordering, not a missing step | flow fix, shared code |
 | The submission guard blocked a request | flow clicked something it must never | **stop, tell the user** |
 | Exit 134 / out of memory in the log | machine | close browsers, lower the worker cap |
+| "Slow site" timeout, but the failure screenshot shows the app's own error dialog | the app raised it after the flow's one-time check | watch for the dialog while waiting instead of checking once; always open the failure screenshot before blaming slowness |
 | Same failure on several sites at once | shared code or shared content | check what changed last, not each site |
 | Text diff right after a planned release | baseline stale | re-record the baseline |
 

@@ -44,6 +44,7 @@ Test case deliverables go to `ARTIFACTS_DIR`, not the repo: one copy of
 | You edited `main/` or `pom/` code more than one site uses, or a report layout | [shared-change-regression.md](references/shared-change-regression.md) |
 | UI vs Figma, CSS parity, FE QA findings | [figma-check.md](references/figma-check.md) → [figma-comparison-rules.md](references/figma-comparison-rules.md), [figma-report-template.md](references/figma-report-template.md) |
 | Manual test cases from a ticket → Excel tracker | [testcase-doc.md](references/testcase-doc.md) |
+| Update or write a team-facing Word doc (framework, agents, process) | [team-doc-update.md](references/team-doc-update.md) + `docs-kit/` |
 
 Asks chain: build or onboard → run safely → shared code touched? → regression.
 A design QA finding can feed test cases (figma-check → testcase-doc).
