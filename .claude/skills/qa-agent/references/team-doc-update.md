@@ -22,9 +22,19 @@ Operations (`docx_edit.py`), each found by exact paragraph text:
 `set_text` (`at`, or `after` + `offset`; optional `style`), `append_text`,
 `insert` (`before`/`after`, `items`), `insert_after_image`, `replace_image`,
 `append_rows` (first table after a heading), `replace_row` (`after`, `key` =
-the row's first cell, `values`), `replace_until_end` (from a
-heading to the end of the doc). An item is `{style, text}`, `{style, rich}`,
-`{image, name}`, `{table, rows}` or `{raw}`. `rich` keeps inline formatting:
+the row's first cell, `values`), `insert_row` (`after`, `before` = the first
+cell of the row it goes above, `values`), `replace_until_end` (from a
+heading to the end of the doc), `remove` (`from`, optional `until`, which is
+kept), `remove_section` / `move_section` (`heading`, and `before` for the
+move; a section runs to the next paragraph with the heading's own style,
+and a heading with no style stops the engine). An item is `{style, text}`,
+`{style, rich}`, `{image, name}`, `{table, rows}` or `{raw}`; add
+`"list": <numId>` to a text item to make it a bullet. A table cell value
+can be a list of strings: each becomes a bullet paragraph in that cell, using
+the config's `list_num`. The numId must be a bullet list that already
+exists in the doc's `word/numbering.xml`. A mark can also be a literal
+`{"rpr": "<w:rPr>…</w:rPr>"}` when no paragraph in the doc has that look.
+Cloned paragraphs that would repeat a `w14:paraId` lose the repeat. `rich` keeps inline formatting:
 `**bold**` and `` `code` `` take their run properties from the config's
 `marks` (`{"bold": {"template": "<key>", "run": <i>}, "code": {...}}`, the
 i-th run of a template paragraph that already has that look). A code span
@@ -52,7 +62,12 @@ exactly as many values as the template row has cells, or the engine stops.
    code per doc; a change the operations can't express goes into
    `docx_edit.py` as a new op. Run Python with `-B -I` so no `__pycache__`
    lands in the skill folder.
-4. **Diagrams in the same style.** Copy `diagrams.example.html` to the work
+4. **Diagrams over words.** The leads skim (asked on 2026-11-23: "ang daming
+   words ... use table tapos bullet bullet sa loob"). Each section is one
+   short line plus a linear diagram; add a diagram whenever a section
+   explains a flow or a set of parts. Anything more goes in a table with
+   short bullets inside the cells, never in paragraphs.
+   **Diagrams in the same style.** Copy `diagrams.example.html` to the work
    folder as `diagrams.html`, one `.card` per diagram, render, then *look* at
    each PNG and fix labels that wrap. Replace an outdated image; don't
    leave it describing the old flow. Plain diagrams only: boxes, arrows

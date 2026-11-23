@@ -39,6 +39,17 @@ class Para:
         runs = "".join(f'<w:r>{rpr}<w:t xml:space="preserve">{escape(text)}</w:t></w:r>' for text, rpr in segments if text)
         return self.head() + runs + "</w:p>"
 
+    def as_list_item(self, num_id):
+        num = f'<w:numPr><w:ilvl w:val="0"/><w:numId w:val="{num_id}"/></w:numPr>'
+        if "<w:pPr>" not in self.template:
+            return Para(self.template.replace(">", f"><w:pPr>{num}</w:pPr>", 1))
+        ppr_start = self.template.index("<w:pPr>")
+        ppr = self.template[ppr_start : self.template.index("</w:pPr>") + len("</w:pPr>")]
+        clean = re.sub(r"<w:ind\b[^>]*/>|<w:numPr>.*?</w:numPr>", "", ppr, flags=re.S)
+        before = list(re.finditer(r"<w:(?:pStyle|keepNext|keepLines|pageBreakBefore|framePr|widowControl)\b[^>]*/>", clean))
+        cut = before[-1].end() if before else len("<w:pPr>")
+        return Para(self.template.replace(ppr, clean[:cut] + num + clean[cut:], 1))
+
 
 class RichText:
     TOKEN = re.compile(r"\*\*(.+?)\*\*|`(.+?)`")
@@ -61,11 +72,24 @@ class Table:
     CELL = re.compile(r"<w:tc(?:\s[^>]*)?>.*?</w:tc>", re.S)
     T = re.compile(r"<w:t(?:\s[^>]*)?>.*?</w:t>", re.S)
 
-    def __init__(self, template):
+    PARA = re.compile(r"<w:p(?:\s[^>]*)?>.*?</w:p>", re.S)
+
+    def __init__(self, template, list_num=None):
         self.template = template
+        self.list_num = list_num
         rows = self.ROW.findall(template)
         self.header, self.data = rows[0], rows[1]
         self.prefix = template[: template.index(rows[0])]
+
+    def cell(self, cell, value):
+        if not isinstance(value, list):
+            return self.T.sub(lambda _m: f'<w:t xml:space="preserve">{escape(value)}</w:t>', cell, count=1)
+        if self.list_num is None:
+            raise ValueError("a list cell needs list_num in the config (a bullet numId from numbering.xml)")
+        paras = self.PARA.findall(cell)
+        start, end = cell.index(paras[0]), cell.rindex(paras[-1]) + len(paras[-1])
+        items = "".join(Para(paras[0]).as_list_item(self.list_num).with_text(v) for v in value)
+        return cell[:start] + items + cell[end:]
 
     def fill(self, row, values):
         cells = self.CELL.findall(row)
@@ -73,8 +97,14 @@ class Table:
             raise ValueError(f"row has {len(values)} values but the template row has {len(cells)} cells: {values}")
         if any(not self.T.search(c) for c in cells):
             raise ValueError("template row has an empty cell with no <w:t>; pick a filled row as the template")
-        filled = [self.T.sub(lambda _m, v=v: f'<w:t xml:space="preserve">{escape(v)}</w:t>', c, count=1) for c, v in zip(cells, values)]
+        filled = [self.cell(c, v) for c, v in zip(cells, values)]
         return row[: row.index(cells[0])] + "".join(filled) + "</w:tr>"
+
+    def insert_row(self, before, values):
+        for row in self.ROW.findall(self.template):
+            if unescape("".join(TEXT.findall(self.CELL.findall(row)[0]))) == before:
+                return self.template.replace(row, self.fill(self.data, values) + row, 1)
+        raise KeyError(f"no row starts with {before!r}")
 
     def build(self, rows):
         return self.prefix + self.fill(self.header, rows[0]) + "".join(self.fill(self.data, r) for r in rows[1:]) + "</w:tbl>"
@@ -146,7 +176,7 @@ class DocxEdit:
         self.package = Package(self.base / self.config["src"])
         self.parts = BodySplitter(self.package.xml).elements()
         self.templates = {k: self.parts[i] for k, i in self.config["templates"].items()}
-        marks = {k: Para(self.templates[v["template"]]).run_rpr(v["run"]) for k, v in self.config.get("marks", {}).items()}
+        marks = {k: v["rpr"] if "rpr" in v else Para(self.templates[v["template"]]).run_rpr(v["run"]) for k, v in self.config.get("marks", {}).items()}
         self.rich = RichText(marks)
 
     def text_of(self, el):
@@ -179,14 +209,29 @@ class DocxEdit:
 
     def item(self, spec):
         if "table" in spec:
-            return Table(self.templates[spec["table"]]).build(spec["rows"])
+            return self.table(self.templates[spec["table"]]).build(spec["rows"])
         if "image" in spec:
             return self.image(self.templates[spec.get("template", "image")], spec["image"], spec["name"])
         if "raw" in spec:
             return self.templates[spec["raw"]]
+        para = Para(self.templates[spec["style"]])
+        if "list" in spec:
+            para = para.as_list_item(spec["list"])
         if "rich" in spec:
-            return Para(self.templates[spec["style"]]).with_runs(self.rich.segments(spec["rich"]))
-        return Para(self.templates[spec["style"]]).with_text(spec["text"])
+            return para.with_runs(self.rich.segments(spec["rich"]))
+        return para.with_text(spec["text"])
+
+    def table(self, template):
+        return Table(template, self.config.get("list_num"))
+
+    def section(self, heading):
+        start = self.find(heading)
+        style = re.search(r'<w:pStyle w:val="([^"]+)"', self.parts[start])
+        if not style:
+            raise ValueError(f"{heading!r} has no paragraph style, so its section end can't be found; use remove with from/until")
+        marker = f'<w:pStyle w:val="{style.group(1)}"'
+        end = next((i for i in range(start + 1, len(self.parts)) if marker in self.parts[i] or self.parts[i].startswith("<w:sectPr")), len(self.parts))
+        return start, end
 
     def apply(self, op):
         kind = op["op"]
@@ -209,10 +254,26 @@ class DocxEdit:
             self.parts[i] = self.image(self.parts[i], op["image"], op["name"])
         elif kind == "append_rows":
             i = self.next_index(self.find(op["after"]), lambda p: p.startswith("<w:tbl"))
-            self.parts[i] = Table(self.parts[i]).append(op["rows"])
+            self.parts[i] = self.table(self.parts[i]).append(op["rows"])
+        elif kind == "insert_row":
+            i = self.next_index(self.find(op["after"]), lambda p: p.startswith("<w:tbl"))
+            self.parts[i] = self.table(self.parts[i]).insert_row(op["before"], op["values"])
         elif kind == "replace_row":
             i = self.next_index(self.find(op["after"]), lambda p: p.startswith("<w:tbl"))
-            self.parts[i] = Table(self.parts[i]).replace_row(op["key"], op["values"])
+            self.parts[i] = self.table(self.parts[i]).replace_row(op["key"], op["values"])
+        elif kind == "remove":
+            start = self.find(op["from"])
+            end = self.find(op["until"], start) if "until" in op else start + 1
+            del self.parts[start:end]
+        elif kind == "remove_section":
+            start, end = self.section(op["heading"])
+            del self.parts[start:end]
+        elif kind == "move_section":
+            start, end = self.section(op["heading"])
+            block = self.parts[start:end]
+            del self.parts[start:end]
+            i = self.find(op["before"])
+            self.parts[i:i] = block
         elif kind == "replace_until_end":
             start = self.find(op["after"]) + 1
             end = self.next_index(start, lambda p: p.startswith("<w:sectPr"))
@@ -220,9 +281,21 @@ class DocxEdit:
         else:
             raise ValueError(f"unknown op {kind}")
 
+    def unique_ids(self):
+        seen = set()
+
+        def keep_first(match):
+            if match.group(1) in seen:
+                return ""
+            seen.add(match.group(1))
+            return match.group(0)
+
+        self.parts = [re.sub(r' w14:paraId="([^"]+)"', keep_first, part) for part in self.parts]
+
     def run(self):
         for op in self.config["operations"]:
             self.apply(op)
+        self.unique_ids()
         out = self.base / self.config["out"]
         self.package.write(out, self.parts)
         print("written", out)
