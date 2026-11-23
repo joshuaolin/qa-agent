@@ -18,14 +18,42 @@ class Para:
     def __init__(self, template):
         self.template = template
 
-    def with_text(self, text):
+    def body_start(self):
         ppr_end = self.template.find("</w:pPr>")
-        search_from = ppr_end + len("</w:pPr>") if ppr_end >= 0 else self.template.index(">") + 1
-        first_run = self.RUN.search(self.template, search_from)
-        head = self.template[: first_run.start()] if first_run else self.template[: self.template.rindex("</w:p>")]
-        rpr = self.RPR.search(self.template, search_from)
-        run = f'<w:r>{rpr.group(1) if rpr else ""}<w:t xml:space="preserve">{escape(text)}</w:t></w:r>'
-        return head + run + "</w:p>"
+        return ppr_end + len("</w:pPr>") if ppr_end >= 0 else self.template.index(">") + 1
+
+    def head(self):
+        first_run = self.RUN.search(self.template, self.body_start())
+        return self.template[: first_run.start()] if first_run else self.template[: self.template.rindex("</w:p>")]
+
+    def run_rpr(self, index):
+        runs = list(re.finditer(r"<w:r(?:\s[^>]*)?>(.*?)</w:r>", self.template[self.body_start():], re.S))
+        found = re.match(r"\s*(<w:rPr>.*?</w:rPr>)", runs[index].group(1), re.S)
+        return found.group(1) if found else ""
+
+    def with_text(self, text):
+        rpr = self.RPR.search(self.template, self.body_start())
+        return self.with_runs([(text, rpr.group(1) if rpr else "")])
+
+    def with_runs(self, segments):
+        runs = "".join(f'<w:r>{rpr}<w:t xml:space="preserve">{escape(text)}</w:t></w:r>' for text, rpr in segments if text)
+        return self.head() + runs + "</w:p>"
+
+
+class RichText:
+    TOKEN = re.compile(r"\*\*(.+?)\*\*|`(.+?)`")
+
+    def __init__(self, marks):
+        self.marks = marks
+
+    def segments(self, text):
+        out, pos = [], 0
+        for m in self.TOKEN.finditer(text):
+            out.append((text[pos : m.start()], ""))
+            out.append((m.group(1), self.marks["bold"]) if m.group(1) is not None else (m.group(2), self.marks["code"]))
+            pos = m.end()
+        out.append((text[pos:], ""))
+        return out
 
 
 class Table:
@@ -82,10 +110,27 @@ class Package:
         self.files["word/" + target] = data
         return rid, int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
 
+    def drop_unused_images(self, body):
+        rels_name = "word/_rels/document.xml.rels"
+        rels = self.files[rels_name].decode("utf-8")
+        used = set(re.findall(r'r:(?:embed|link|id)="([^"]+)"', body))
+        for tag in re.findall(r"<Relationship\b[^>]*/>", rels):
+            if self.IMAGE_REL in tag and re.search(r'Id="([^"]+)"', tag).group(1) not in used:
+                rels = rels.replace(tag, "")
+        self.files[rels_name] = rels.encode("utf-8")
+        targets = set()
+        for name, data in self.files.items():
+            if name.endswith(".rels"):
+                targets.update(Path(t).name for t in re.findall(r'Target="([^"]+)"', data.decode("utf-8")))
+        for name in [n for n in self.files if n.startswith("word/media/") and Path(n).name not in targets]:
+            del self.files[name]
+
     def write(self, path, parts):
         start = self.xml.index("<w:body>") + len("<w:body>")
         end = self.xml.rindex("</w:body>")
-        self.files["word/document.xml"] = (self.xml[:start] + "".join(parts) + self.xml[end:]).encode("utf-8")
+        body = "".join(parts)
+        self.files["word/document.xml"] = (self.xml[:start] + body + self.xml[end:]).encode("utf-8")
+        self.drop_unused_images(self.files["word/document.xml"].decode("utf-8"))
         ct = self.files["[Content_Types].xml"].decode("utf-8")
         if 'Extension="png"' not in ct:
             self.files["[Content_Types].xml"] = ct.replace("<Default ", '<Default Extension="png" ContentType="image/png"/><Default ', 1).encode("utf-8")
@@ -101,6 +146,8 @@ class DocxEdit:
         self.package = Package(self.base / self.config["src"])
         self.parts = BodySplitter(self.package.xml).elements()
         self.templates = {k: self.parts[i] for k, i in self.config["templates"].items()}
+        marks = {k: Para(self.templates[v["template"]]).run_rpr(v["run"]) for k, v in self.config.get("marks", {}).items()}
+        self.rich = RichText(marks)
 
     def text_of(self, el):
         return unescape("".join(TEXT.findall(el)))
@@ -137,6 +184,8 @@ class DocxEdit:
             return self.image(self.templates[spec.get("template", "image")], spec["image"], spec["name"])
         if "raw" in spec:
             return self.templates[spec["raw"]]
+        if "rich" in spec:
+            return Para(self.templates[spec["style"]]).with_runs(self.rich.segments(spec["rich"]))
         return Para(self.templates[spec["style"]]).with_text(spec["text"])
 
     def apply(self, op):

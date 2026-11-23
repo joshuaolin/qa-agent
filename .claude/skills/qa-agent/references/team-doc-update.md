@@ -16,15 +16,19 @@ Tools live in `docs-kit/` (run everything from the repo root):
 | `scripts/render_diagrams.cjs <workdir>` | Renders every `.card[id]` in `<workdir>\diagrams.html` to `<id>.png` with the repo's Playwright |
 | `scripts/docx_edit.py <config.json>` | The engine: clones the doc's own paragraphs and tables and applies the operations listed in the JSON. Paths in the JSON are relative to it |
 | `templates/edit_config.example.json` | A real doc update as data: `templates` (element indices to clone, picked with `docx_body.py`) and `operations` |
-| `templates/diagrams.example.html` | Illustrated diagram style: light card, teal heading, robot and person figures |
+| `templates/diagrams.example.html` | Plain diagram style: light card, teal heading, boxes and arrows, status tags. No robot or person figures |
 
 Operations (`docx_edit.py`), each found by exact paragraph text:
 `set_text` (`at`, or `after` + `offset`; optional `style`), `append_text`,
 `insert` (`before`/`after`, `items`), `insert_after_image`, `replace_image`,
 `append_rows` (first table after a heading), `replace_row` (`after`, `key` =
 the row's first cell, `values`), `replace_until_end` (from a
-heading to the end of the doc). An item is `{style, text}`, `{image, name}`,
-`{table, rows}` or `{raw}`. Tags with attributes (Word's `w:rsidR`) are
+heading to the end of the doc). An item is `{style, text}`, `{style, rich}`,
+`{image, name}`, `{table, rows}` or `{raw}`. `rich` keeps inline formatting:
+`**bold**` and `` `code` `` take their run properties from the config's
+`marks` (`{"bold": {"template": "<key>", "run": <i>}, "code": {...}}`, the
+i-th run of a template paragraph that already has that look). A code span
+inside bold is not handled: close the bold first (`**Needs** `x``). Tags with attributes (Word's `w:rsidR`) are
 handled. Not handled: nested tables, body-level `<w:sdt>` (a TOC) or
 bookmarks between paragraphs (dropped on write), and template cells with
 several runs (only the first run's text is replaced). An empty template
@@ -51,7 +55,10 @@ exactly as many values as the template row has cells, or the engine stops.
 4. **Diagrams in the same style.** Copy `diagrams.example.html` to the work
    folder as `diagrams.html`, one `.card` per diagram, render, then *look* at
    each PNG and fix labels that wrap. Replace an outdated image; don't
-   leave it describing the old flow.
+   leave it describing the old flow. Plain diagrams only: boxes, arrows
+   and labels, no cartoon figures (the leads asked for this on
+   2026-11-23). When the leads give notes, put them in a diagram as
+   written, with the real status of each item.
 5. **Every claim matches the system.**
    - Who approves what: x-agent reviews, the owner gives the go.
    - What teammates actually get: anything only on one person's machine says
