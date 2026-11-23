@@ -65,6 +65,23 @@ Everything goes under `reports/` (git-ignored):
 - PNGs are overwritten on every run. The xlsx is one per site per day; if it
   is open in Excel, the new one is written beside it with a timestamp.
 
+## Per-site preparer data
+
+Site quirks live in `resources/<Site>/page-preparer.json`, never in code:
+`consentSelectors`, `hideSelectors`, `pauseSelectors`, `footerSelector`.
+
+- **A small DIFF in the same spot on every run is usually timing, not a
+  change.** Find the element at the diff's bounding box
+  (`document.elementFromPoint`). JS-driven progress bars, countdowns and
+  "time ago" labels differ per capture even after pausing. Hide just that
+  element (the fill, not its track) in `hideSelectors`.
+- **No `<footer>` tag** (CSS-module sites like Next.js): use
+  `[class*='Footer_main__']`. Match on the stable prefix, since the hash
+  suffix changes per build.
+- **allaboutvision.com:** Tealium consent `#consent_prompt_submit`, UserWay
+  widget `.userway_buttons_wrapper`, hero carousel `Pause Slider` button and
+  its `AnimatedBanner_progress__` fill.
+
 ## Adding pages or a site
 
 - **More pages:** add the URLs to the site's `url.json`. No code change.
