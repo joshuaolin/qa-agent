@@ -250,7 +250,9 @@ class DocxEdit:
             i = self.next_index(self.find(op["after"]), lambda p: "<w:drawing>" in p) + 1
             self.parts[i:i] = [self.item(s) for s in op["items"]]
         elif kind == "replace_image":
-            i = self.next_index(self.find(op["after"]), lambda p: "<w:drawing>" in p)
+            i = self.find(op["after"])
+            for _ in range(op.get("nth", 1)):
+                i = self.next_index(i + 1, lambda p: "<w:drawing>" in p)
             self.parts[i] = self.image(self.parts[i], op["image"], op["name"])
         elif kind == "append_rows":
             i = self.next_index(self.find(op["after"]), lambda p: p.startswith("<w:tbl"))

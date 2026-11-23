@@ -20,7 +20,8 @@ Tools live in `docs-kit/` (run everything from the repo root):
 
 Operations (`docx_edit.py`), each found by exact paragraph text:
 `set_text` (`at`, or `after` + `offset`; optional `style`), `append_text`,
-`insert` (`before`/`after`, `items`), `insert_after_image`, `replace_image`,
+`insert` (`before`/`after`, `items`), `insert_after_image`, `replace_image`
+(optional `nth`: the n-th image after the anchor, default 1),
 `append_rows` (first table after a heading), `replace_row` (`after`, `key` =
 the row's first cell, `values`), `insert_row` (`after`, `before` = the first
 cell of the row it goes above, `values`), `replace_until_end` (from a
