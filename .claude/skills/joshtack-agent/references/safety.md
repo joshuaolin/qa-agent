@@ -45,6 +45,25 @@ the standing instruction.
   delete is permanent. Tell him the path and that he can delete it later.
 - Duplicates of a repo that exists elsewhere → delete, and say where the original is.
 
+## Commits
+
+His repos often carry his own uncommitted work in progress next to yours.
+Commit and push only when he said so, and commit only what you changed:
+
+- **Before:** `git status --short` and note what was already modified or
+  untracked before you started. That is his, not yours.
+- **Stage by path**, file by file or folder by folder: `git add -- <paths>`.
+  Never `git add -A`, `git add .` or `git commit -a`.
+- **A file holding both his edits and yours:** don't commit it. Say which
+  file and ask.
+- **Check what's staged** with `git diff --cached --stat` and read the
+  list before committing; it must match what you meant to ship.
+- **Message:** what changed and why, what was verified (a run, a check),
+  and what is still to verify. Write it to a file outside the repo (the
+  scratchpad) and use `git commit -F`.
+- **Push** only after the reviewer's verdict.
+  No remote → say so; never add one on your own.
+
 ## Secrets
 
 Passwords and tokens go in `.env`, and their key names go in `.env.example`
