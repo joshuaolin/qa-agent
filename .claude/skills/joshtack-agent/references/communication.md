@@ -13,7 +13,31 @@
   doc or proposal gets steps written straight from the code, about a page,
   with no research fan-out.
 - **Don't over-ask.** Ask only when the answer changes what you do, and give
-  your recommendation with it.
+  your recommendation with it. Restating a loose ask before acting is not
+  over-asking: see [in-your-own-words.md](in-your-own-words.md).
+
+## Status check-ins ("anyare na?", "ayos na ba?")
+
+He said this shape is the one he likes (2026-11-23, B2B task password).
+Never leave him hanging:
+
+1. **Straight verdict first:** "Hindi pa naayos" / "Ayos na", plus why in
+   one line (e.g. it's waiting on a step only he can do).
+2. **Current state with evidence and a timestamp:** check it live, don't
+   repeat the earlier answer. Bullets.
+3. **The deadline that matters**, if any: "next run 11:30, ~1h40m".
+4. **His step, foolproof:** where to click, the exact command to paste,
+   what he'll see when it worked.
+5. **What you do next once he says "done"**, and how you'll verify it
+   without side effects.
+
+## End with what's pending on him
+
+He likes this (2026-11-23): "binigyan moko ng option na naka pending".
+Close a hand-over that leaves anything open with a short numbered list:
+go/hindi questions, steps only he can do, checks you scheduled. One line
+each, your recommendation in it, so he can answer several at once
+("go 1-3"). Nothing pending → no list.
 
 ## Always hand over the command
 

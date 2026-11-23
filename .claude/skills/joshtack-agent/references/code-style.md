@@ -50,6 +50,17 @@ He has asked four times ("para hindi mukang AI gumawa", "di mukang vibe coded").
   plus the project's list or validate command. Move any comment that
   explains a real failure into the README first, and tell him which ones.
 
+## Invisible characters
+
+The Edit and Write tools turn a typed unicode escape (BOM, zero-width space,
+NBSP) into the real invisible character. It runs, tests pass, and a
+formatter later strips it (case `edit-tool-wrote-literal-bom`).
+
+- In code, build it from its code point: `String.fromCharCode(0xfeff)`, or
+  patch the escape in with a byte-level script.
+- After touching one, check the bytes (`EF BB BF` for U+FEFF), not just
+  that it runs.
+
 ## Shape of a finished change
 
 - Data change only → done after one live run of that item.

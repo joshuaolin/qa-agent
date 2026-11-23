@@ -36,16 +36,40 @@ schedulers on Windows.
 
 | Reference | When it loads |
 |---|---|
+| `in-your-own-words.md` | Any request it had to interpret: it restates goal, plan and guesses, then waits for your go |
 | `code-style.md` | Writing or changing any code or script |
 | `safety.md` | Changes to an existing project, cleanup, delete, test runs |
-| `communication.md` | Replies, explanations, handing over commands |
-| `investigate.md` | Anything broken, slow or flaky |
+| `communication.md` | Replies, explanations, handing over commands, status check-ins |
 | `schedulers-windows.md` | Cron jobs and schedulers on a Windows laptop |
+
+## Companion skill: conan-agent
+
+`.claude/skills/conan-agent/` is the bug investigator and the team's memory.
+It finds causes from evidence (code read, output seen, a run done), and logs
+every bug, mistake and instruction as a case in `cases/` with a prevention
+rule. A rule that applies beyond its case is drafted into the skill it
+belongs to; x-agent reviews the draft and a person gives the go.
+
+| Reference | When it loads |
+|---|---|
+| `investigate.md` | Anything broken, slow or flaky (moved here from joshtack-agent) |
+| `casebook.md` | A case is solved, a correction or an instruction was given |
+
+## Companion agent: x-agent
+
+`.claude/agents/x-agent.md` is a read-only reviewer subagent, and
+`.claude/skills/x-agent/` tells the main agent when to call it: before any
+non-trivial work is reported done. It checks the work against the ask, the
+skills' rules and the casebook, returns `✅ PASS` or `✗ ISSUES` with
+file:line findings, and every review goes into `ledger.md`, with columns for
+what a person confirmed and what x-agent missed. The missed count is the
+main signal for how far the review can be trusted.
 
 ## Install
 
-Both skills ship pre-installed. They live in `.claude/skills/`, the folder
-Claude Code scans when it opens a project, so there is nothing to copy:
+All four ship pre-installed. The skills live in `.claude/skills/` and the
+reviewer subagent in `.claude/agents/`, the folders Claude Code scans when
+it opens a project, so there is nothing to copy:
 
 1. Clone the repo and open the folder in Claude Code:
    ```
@@ -55,10 +79,11 @@ Claude Code scans when it opens a project, so there is nothing to copy:
    ```
    Type `/` and `/qa-agent` and `/joshtack-agent` show up in the suggestions.
    If they don't, start a new session or reload the VS Code window.
-2. To use them in another project, copy `.claude/skills/qa-agent/` and
-   `.claude/skills/joshtack-agent/` into that project's `.claude/skills/`,
-   or into `~/.claude/skills/` for every project. A copy doesn't update
-   itself: copy again after you pull changes.
+2. To use them in another project, copy the four folders under
+   `.claude/skills/` into that project's `.claude/skills/` and
+   `.claude/agents/x-agent.md` into its `.claude/agents/`, or into
+   `~/.claude/skills/` and `~/.claude/agents/` for every project. A copy
+   doesn't update itself: copy again after you pull changes.
 3. Open `.claude/skills/qa-agent/SKILL.md` and fill in **Project settings**
    (artifacts folder, Excel template, preview origin, schedule).
 4. For the Figma check, install its tools once:
@@ -68,7 +93,25 @@ Claude Code scans when it opens a project, so there is nothing to copy:
    npx playwright install chromium
    pip install openpyxl pillow
    ```
-5. In Claude Code, type `/qa-agent` and describe the task in plain words.
+5. Optional, for conan-agent's automatic reminders: add these hooks to
+   `.claude/settings.json` (this project) or `~/.claude/settings.json` (all
+   projects). Each session then starts with the standing instructions and
+   latest lessons from `cases/`, and a prompt with bug or correction keywords
+   reminds the agent to load conan-agent. The relative path below only
+   works in the project's `.claude/settings.json` (Claude Code started from
+   the repo root). In `~/.claude/settings.json`, install the skill under
+   `~/.claude/skills/` and use the absolute path to
+   `~/.claude/skills/conan-agent/hooks/conan-hook.mjs`, or every other
+   project fails to find the hook.
+   ```json
+   {
+     "hooks": {
+       "SessionStart": [{ "hooks": [{ "type": "command", "command": "node", "args": [".claude/skills/conan-agent/hooks/conan-hook.mjs", "session"], "timeout": 10 }] }],
+       "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "node", "args": [".claude/skills/conan-agent/hooks/conan-hook.mjs", "prompt"], "timeout": 10 }] }]
+     }
+   }
+   ```
+6. In Claude Code, type `/qa-agent` and describe the task in plain words.
 
 ## Expected repo layout
 

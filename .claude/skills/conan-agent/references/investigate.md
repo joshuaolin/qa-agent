@@ -9,26 +9,32 @@ right answers.
 
 ## Rules
 
-1. **No cause without evidence you actually opened this session.** Every
+1. **Check the casebook first.** Search `cases/` for the site, suite, file
+   or error text. A match is your first hypothesis, not your answer.
+2. **No cause without evidence you actually opened this session.** Every
    claim cites one of these:
    - code: `path/file.js:123`, a line you read;
    - output: a log line, an error, an HTML dump, a test result;
    - a run: what you executed and what it printed.
    "Probably", "it looks like", "should be" are hypotheses. Label them that
    way and go check.
-2. **Read the code path end to end** before blaming a piece of it: entry
+3. **Read the code path end to end** before blaming a piece of it: entry
    point → the function that failed → what it calls. Not just the file whose
    name sounds right.
-3. **Reproduce before you fix.** Run the failing case yourself, safely (see
-   [safety.md](safety.md)). If it doesn't reproduce, say so. That is a finding.
-4. **Compare with a sibling that works.** The same flow on another site,
+4. **Reproduce before you fix.** Run the failing case yourself, safely (see
+   joshtack-agent's safety.md, and qa-agent's run-safely.md in repos that
+   have it). If it doesn't reproduce, say so. That is a finding.
+5. **Compare with a sibling that works.** The same flow on another site,
    the last green run, yesterday's log. The difference is usually the cause.
-5. **One hypothesis at a time.** Change one thing, re-run, read the result.
+6. **One hypothesis at a time.** Change one thing, re-run, read the result.
    Never stack three "fixes" and hope.
-6. **Wide searches go to a subagent.** When the answer means sweeping many
+7. **Wide searches go to a subagent.** When the answer means sweeping many
    files, delegate the search and keep the conclusion. Don't guess instead.
-7. **Say "hindi ko pa alam" when you don't know.** Then say what you'd check
+8. **Say "hindi ko pa alam" when you don't know.** Then say what you'd check
    next. Never present a guess as "the smoking gun".
+
+QA suite failures (B2B, GWS, checkers) also follow qa-agent's
+triage-failure.md for where the evidence lives and how to classify it.
 
 ## Report shape
 
@@ -39,4 +45,5 @@ Ayusin:    <proposed fix>, whose: <code | data | site/env | machine>
 Na-verify: <what you ran after, and its result>  (or: "hindi pa, kasi …")
 ```
 
-Propose the fix and wait, unless he already said to go ahead.
+Propose the fix and wait, unless he already said to go ahead. Once it's
+solved, log the case ([casebook.md](casebook.md)).
