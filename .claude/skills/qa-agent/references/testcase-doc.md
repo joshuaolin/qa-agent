@@ -79,6 +79,14 @@ A check added from QA judgement rather than stated in the ticket
 it visibly, e.g. prefix the name with `[Added QA check, not in ticket]`, so
 the requester can tell ticket coverage from judgement calls at a glance.
 
+## Build and execute with the shared tools
+
+The ticket folder (`qa-reports/TC-<TICKET>/`, git-ignored) holds only data: `tc_rows.json` (the rows; `order` = the locale/env list; `unit` = Locale or Env; `summary`), `results.json` from the evidence run, and an optional `review.json` (per-row status or remark overrides).
+
+- **Steps anyone can follow:** from opening the browser and typing the full URL, through every click and scroll, to the component named by what is on screen. Precondition: 1–2 short lines (browser + the site that must open).
+- **Evidence run:** a one-time Playwright script shoots each component with `testcase/evidence-shot.cjs` (the component in its page, red box + label, page URL strip) and paints page-source checks as one table with `testcase/table-painter.cjs`.
+- **Build:** `python .claude/skills/qa-agent/testcase/write_tc.py qa-reports/TC-<TICKET> <TC_TEMPLATE> <ARTIFACTS_DIR>/TC-<TICKET>.xlsx`. It renames `Module1` to `Test Cases` (Dashboard formulas follow), sets Written/Executed By to `qa-agent`, adds a blank `Final Validation By` column, and embeds every screenshot in one `Evidence` sheet so the workbook alone can be shared. It refuses to write while the file is open and archives the previous copy.
+
 ## Reading the source ticket
 
 - A screenshot or pasted ticket text is the simplest input. Work from it directly.
@@ -89,3 +97,4 @@ the requester can tell ticket coverage from judgement calls at a glance.
   if no Jira tool loads, ask for the paste. Meanwhile, copy the template and
   read the latest sibling `TC-<KEY>.xlsx` so the rows match its style.
 - Data rows go in the `Module1` sheet of the copy.
+  The shared writer (above) renames that sheet to `Test Cases`.

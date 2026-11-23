@@ -1,0 +1,24 @@
+{
+  "suite": "B2B",
+  "runs": "reports/B2B",
+  "folderPattern": "^(\\d{8})_(\\d{6})_([A-Z]+\\d+)_(PASS|FAIL|RUNNING)$",
+  "evidence": ["FAILURE_{label}.png", "FAILURE_{label}.html"],
+  "chainGapMinutes": 30,
+  "sameBatchMinutes": 20,
+  "sharedAtSites": 3,
+  "stableFirstTry": 0.9,
+  "mostlyStableFirstTry": 0.75,
+  "mostlyStableMaxFails": 1,
+  "causes": [
+    ["SubmissionGuard", "STOP: guard blocked a request", "tell the owner before anything else"],
+    ["has been closed|Target closed|browser has disconnected", "run interrupted: browser closed mid-run", "not a site result; check the batch log for who stopped it"],
+    ["Order Account|customer code|no longer has access", "data: order account", "the site's entity data: orderAccount; ask the site owner"],
+    ["rejected by form validation", "timing: transient Rx validation, or a value out of range", "wait for the message to clear before failing; check the value against the range in the message"],
+    ["blocked the order|its own alert|declin|not available for", "data: product / parameter for the catalog", "the site's entity data: lens.filters / coating"],
+    ["net::|ERR_|5\\d\\d |Navigation timeout|page\\.goto", "environment: site slow or down", "re-run once; report, don't fix"],
+    ["login (failed|rejected|error)|field_error|invalid credentials|locked", "environment or account: login rejected", "check the login monitor for the same day"],
+    ["Timeout \\d+ms exceeded", "timing or app error modal (open FAILURE png)", "triage-failure.md: app modal vs slow site vs locator"],
+    ["not found|no element|strict mode", "locator / wording drift", "fix the locator or wording in the page object"]
+  ],
+  "unknown": ["unclassified", "triage-failure.md by hand, then add a cause pattern here"]
+}

@@ -45,6 +45,9 @@ Test case deliverables go to `ARTIFACTS_DIR`, not the repo: one copy of
 | UI vs Figma, CSS parity, FE QA findings | [figma-check.md](references/figma-check.md) → [figma-comparison-rules.md](references/figma-comparison-rules.md), [figma-report-template.md](references/figma-report-template.md) |
 | Manual test cases from a ticket → Excel tracker | [testcase-doc.md](references/testcase-doc.md) |
 | Update or write a team-facing Word doc (framework, agents, process) | [team-doc-update.md](references/team-doc-update.md) + `docs-kit/` |
+| Build the test case workbook (Test Cases sheet, steps anyone can follow, screenshots with the URL and the component marked, embedded in one Evidence sheet) | `testcase/write_tc.py` + `testcase/evidence-shot.cjs` + `testcase/table-painter.cjs` |
+| Trends across many runs: flaky tests, recurring failures, "what failed most this week", QA summary | [analyst.md](references/analyst.md) (engine `analyst/` + `analyst-agent`) |
+| A multi-step ask, or "where are we" | keep `qa-reports/STATUS.md` current with `status/status.py` (add / set / list) |
 
 Asks chain: build or onboard → run safely → shared code touched? → regression.
 A design QA finding can feed test cases (figma-check → testcase-doc).
