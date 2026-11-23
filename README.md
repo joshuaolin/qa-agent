@@ -25,6 +25,7 @@ updated `.md`, so the next run already knows it.
 | `shared-change-regression.md` | After a change to shared code, reruns every site that uses it | "Make sure nothing else broke" |
 | `figma-check.md` (+ rules, report template) | Compares a live page to Figma by computed CSS, writes a findings Excel | "Validate: figma = <link>, environment = <url>" |
 | `testcase-doc.md` | Writes manual test cases from a ticket into a copy of your Excel tracker | "Write test cases for PROJ-123" |
+| `team-doc-update.md` (+ `docs-kit/`) | Updates a team Word document in its own style: same-style diagrams, every claim checked, reviewed before hand-over | "Update the validation doc based on the current setup" |
 
 ## Companion skill: joshtack-agent
 
