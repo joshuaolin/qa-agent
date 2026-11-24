@@ -87,6 +87,62 @@ The ticket folder (`qa-reports/TC-<TICKET>/`, git-ignored) holds only data: `tc_
 - **Evidence run:** a one-time Playwright script shoots each component with `testcase/evidence-shot.cjs` (the component in its page, red box + label, page URL strip) and paints page-source checks as one table with `testcase/table-painter.cjs`.
 - **Build:** `python .claude/skills/qa-agent/testcase/write_tc.py qa-reports/TC-<TICKET> <TC_TEMPLATE> <ARTIFACTS_DIR>/TC-<TICKET>.xlsx`. It renames `Module1` to `Test Cases` (Dashboard formulas follow), sets Written/Executed By to `qa-agent`, adds a blank `Final Validation By` column, and embeds every screenshot in one `Evidence` sheet so the workbook alone can be shared. It refuses to write while the file is open and archives the previous copy.
 
+## Executing the test cases (evidence run)
+
+Continuous: as soon as the rows are written and verified from disk, execute
+every row on the environment the ticket names, without waiting for a go
+(ask only if the ticket names no environment). The reviewer checks the rows
+and the evidence together at hand-over. Run safely: read
+[run-safely.md](run-safely.md) first; never submit an order, form or email
+that reaches real people while executing.
+
+1. **Expected look.** Save the ticket's mockup or screenshot attachments to
+   `<ARTIFACTS_DIR>/TC-<TICKET>-evidence/jira-<n>.png`. They are the expected
+   result for the rows that show UI; the row's Expected Result (I) is the rest.
+2. **Run the steps.** A one-time Playwright script in `qa-reports/TC-<TICKET>/`
+   (git-ignored, not a repo spec) follows each row's Test Steps (H) and takes a
+   screenshot for each check that shows something on screen:
+   `TC-<TICKET>-<seq>-<locale>-step<k>.png`, named after the step it proves.
+   Viewport and browser per the row (default 1440 desktop; the ticket's mobile width when it shows mobile). Take component
+   shots with `testcase/evidence-shot.cjs` (`EvidenceShot.capture(page, locator,
+   file, label)`): the component in its page context, red box and label, a
+   strip with the page URL, viewport and time (a caption, never a fake browser
+   bar). A step that cannot be done (element missing, page error) is itself
+   evidence: screenshot it and stop that row. A check with nothing on screen
+   (metadata, HTTP status) gets one table shot for all locales, page value next
+   to the expected value, painted with `testcase/table-painter.cjs`. A pass
+   that rests on markup also gets such a table, because a picture can't show
+   the tag. No test case goes into the workbook without evidence.
+3. **Compare.** Put the last step's shot next to the ticket image and the
+   Expected Result and say concretely what matches and what differs. When a
+   copy spec gives the expected text, compare both ways: every spec line is on
+   the page, AND nothing on the page is missing from the spec. Scope each check
+   to the item it is about (one card, one accordion item), never the whole
+   section. Dump the real page text before calling a copy difference a finding.
+   For exact CSS parity use [figma-check.md](figma-check.md).
+4. **Fill the row.**
+   - **K Actual Result:** short enough to read without clicking: one line per
+     failed locale with the reason, then one line each for the other outcomes,
+     then a "click this cell" line linking to the TC's block on the Evidence
+     sheet. A Blocked row's line carries the reason.
+   - **Evidence sheet:** one block per TC and locale with the full "what was
+     seen" text and that line's screenshots embedded. A line with no
+     screenshot says why; "component not on this page" is a gap to close, not
+     a pass. A ticket image is captioned "ticket screenshot (expected look, not
+     a run)", never as a run step.
+   - **J Status:** the outcome itself, `Passed` / `Failed` / `Blocked`, never
+     left at `In Progress`. **M Remarks** says why, starting `qa-agent:`.
+   - **Judgment calls go in the file, not in chat:** an item to confirm with
+     the PO or a likely spec typo gets its status in J and the open point in M
+     ("to confirm with the PO: ...").
+   - **O/P dates:** the run's date. **Q Executed By:** `qa-agent`.
+5. **Hand-over.** One line per row (ID, outcome, the screenshot to look at),
+   the evidence folder path, and what could not be executed. The reviewer
+   gives the final status and the feedback to dev / PO.
+
+If the same ticket area keeps coming back, offer to turn the throwaway script
+into a real spec ([new-page-automation.md](new-page-automation.md)).
+
 ## Reading the source ticket
 
 - A screenshot or pasted ticket text is the simplest input. Work from it directly.
@@ -98,3 +154,4 @@ The ticket folder (`qa-reports/TC-<TICKET>/`, git-ignored) holds only data: `tc_
   read the latest sibling `TC-<KEY>.xlsx` so the rows match its style.
 - Data rows go in the `Module1` sheet of the copy.
   The shared writer (above) renames that sheet to `Test Cases`.
+- When the ticket points to a document or file ("this document", a linked doc, an attachment), ask where the file is before writing the test cases that depend on it; never guess its contents.

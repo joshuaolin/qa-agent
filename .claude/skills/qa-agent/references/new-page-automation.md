@@ -53,6 +53,7 @@ the features to cover. Everything below is how the agent turns that into code.
 
    export default CartPage;
    ```
+   Build every `locator` with the patterns in [xpath-locators.md](xpath-locators.md).
    The class name must equal the file name. Use `CartPage.actiondriver`, not
    `this`, inside the element methods (`this` there is the element object,
    which is how `this.locator` works).

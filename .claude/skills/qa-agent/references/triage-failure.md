@@ -47,3 +47,7 @@ Three lines: **what failed** (site, step, attempt n/3), **why** (with the
 file that shows it: the HTML dump line, the app message, the log line), and
 **whose fix it is** (site/environment, data, code, machine). Propose the fix.
 Don't apply it until the user says so.
+
+Search **bug-investigator**'s `cases/` for the site and error first. Once the
+cause is proven, log it there as a case; a new classification row learned
+from it goes into the table above.
