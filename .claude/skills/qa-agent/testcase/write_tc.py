@@ -56,6 +56,96 @@ LINK_FONT = Font(name="Calibri", size=9, color="0563C1", underline="single")
 HEADER_FILL = PatternFill("solid", fgColor="B8CCE4")
 
 
+class Itemized:
+    BULLET = "• "
+    MAX_SENTENCE = 120
+
+    def __init__(self, tc_id, field):
+        self.tc_id = tc_id
+        self.field = field
+
+    def items(self, value):
+        if isinstance(value, list):
+            return [str(v).strip() for v in value if str(v).strip()]
+        lines = [l.strip() for l in str(value).split("\n") if l.strip()]
+        if len(lines) == 1 and len(lines[0]) > self.MAX_SENTENCE:
+            raise SystemExit(f"{self.tc_id} {self.field} is one {len(lines[0])}-character sentence; write it in tc_rows.json / review.json as a list of short items")
+        return lines
+
+    def bullets(self, value):
+        items = self.items(value)
+        return items[0] if len(items) == 1 else "\n".join(self.BULLET + i for i in items)
+
+    def numbered(self, value):
+        return "\n".join(f"{n}. {i}" for n, i in enumerate(self.items(value), start=1))
+
+
+class TopLevel:
+    OPEN, CLOSE = "([", ")]"
+
+    @classmethod
+    def split(cls, text, sep):
+        out, depth, quoted, start, i = [], 0, False, 0, 0
+        while i < len(text):
+            ch = text[i]
+            if ch == '"':
+                quoted = not quoted
+            elif not quoted and ch in cls.OPEN:
+                depth += 1
+            elif not quoted and ch in cls.CLOSE:
+                depth = max(0, depth - 1)
+            elif not quoted and depth == 0 and text.startswith(sep, i):
+                out.append(text[start:i].strip())
+                i += len(sep)
+                start = i
+                continue
+            i += 1
+        out.append(text[start:].strip())
+        return [p for p in out if p]
+
+
+class WhatWasSeen:
+    QUOTE = re.compile(r'"[^"]*"')
+    COUNTED = re.compile(r"^(.*?)\s*(#\d+\s.*)$")
+    MIN_LISTED = 3
+    BULLET = "• "
+    SUB = "    – "
+
+    def __init__(self, page_prefix):
+        self.page = re.compile(page_prefix)
+
+    def part(self, text):
+        if len(self.QUOTE.findall(text)) < self.MIN_LISTED:
+            return [self.BULLET + text]
+        items = TopLevel.split(text, ", ")
+        head = text[:text.index('"')]
+        counted = self.COUNTED.match(items[0])
+        if head.rstrip().endswith(":") and items[0].startswith(head):
+            label, items[0] = head.rstrip(), items[0][len(head):]
+        elif counted and counted.group(1):
+            label, items[0] = f"{counted.group(1).rstrip(' :')}:", counted.group(2)
+        else:
+            return [self.BULLET + items[0]] + [self.SUB + i for i in items[1:]]
+        return [self.BULLET + label] + [self.SUB + i for i in items]
+
+    def text(self, details):
+        out = []
+        blocks = details.split(" || ")
+        for block in blocks:
+            page = self.page.match(block)
+            body = block[page.end():] if page else block
+            if page:
+                out.append(f"{page.group(1)}:")
+            for p in TopLevel.split(body, "; "):
+                out += self.part(p)
+            if len(blocks) > 1:
+                out.append("")
+        lines = out[:-1] if out and out[-1] == "" else out
+        if len(lines) == 1:
+            return lines[0][len(self.BULLET):]
+        return "\n".join(lines)
+
+
 class Outcome:
     def __init__(self, results, review, order, unit):
         self.by_seq = {}
@@ -100,7 +190,8 @@ class Outcome:
 
         lines = [(r["locale"], label(r), r["details"]) for r in rows]
         lines += [(l, "NOT RUN", b["details"]) for l in missing for b in blocked if b["locale"] == l]
-        remark = f"qa-agent: {summary}" + (f". {note['remark']}" if note.get("remark") else "")
+        notes = Itemized(f"seq {seq}", "remark").items(note["remark"]) if note.get("remark") else []
+        remark = "\n".join([f"qa-agent: {summary}"] + [Itemized.BULLET + n for n in notes])
         evidence = [("all", e) for e in note.get("evidence", [])] + [(r["locale"], e) for r in rows for e in r["evidence"]]
         return status, lines, remark, evidence
 
@@ -198,10 +289,11 @@ class EvidenceSheet:
     NO_SHOT = "component not on this page; no screenshot taken"
     NOT_EXECUTED = "ticket screenshot (expected look, not a run)"
 
-    def __init__(self, wb, folder, unit, no_shot):
+    def __init__(self, wb, folder, unit, no_shot, seen):
         self.ws = wb.create_sheet("Evidence")
         self.folder = Path(folder)
         self.no_shot = no_shot
+        self.seen = seen
         self.row = 2
         self.anchors = {}
         self.file_rows = {}
@@ -222,12 +314,17 @@ class EvidenceSheet:
             placed += own
             out.append((own, [f for f in mine if f not in own]))
         if not any(own or shared for own, shared in out) and tc_id not in self.no_shot:
-            raise SystemExit(f"{tc_id} has no evidence; a page-source check needs its consolidated table screenshot (TC-<T>-<seq>-all-step1.png)")
+            raise SystemExit(f"{tc_id} has no evidence; a page-source check needs its consolidated table screenshot (TC-<T>-<seq>-all-step<k>.png, k = the column H step it proves)")
         return out
 
-    def caption(self, file):
-        step = file.rsplit("-step", 1)[-1].split(".")[0] if "-step" in file else None
-        return f"step {step}: {file}" if step else f"{self.NOT_EXECUTED}: {file}"
+    def caption(self, tc_id, file):
+        if "-step" not in file:
+            return f"{self.NOT_EXECUTED}: {file}"
+        step = file.rsplit("-step", 1)[-1].split(".")[0]
+        owner = re.match(r"(TC-[A-Za-z0-9]+-(\d+))-", file)
+        if owner and owner.group(1) != tc_id:
+            return f"TC-{owner.group(2)} step {step}: {file}"
+        return f"step {step}: {file}"
 
     def write_line(self, tc_id, locale, label, details):
         for col, value in enumerate((tc_id, locale, label, details), start=1):
@@ -245,13 +342,13 @@ class EvidenceSheet:
             gap.hyperlink = Hyperlink(ref=f"E{self.row}", location=f"'Evidence'!A{self.anchors[note['linkTc']]}")
             gap.font = Font(name="Calibri", size=9, italic=True, color="0563C1", underline="single")
 
-    def write_shots(self, files):
+    def write_shots(self, tc_id, files):
         if len(files) > len(self.SHOT_COLUMNS):
             raise SystemExit(f"{len(files)} screenshots on one line; the Evidence sheet has {len(self.SHOT_COLUMNS)} screenshot columns")
         shots = [Screenshot(self.folder / f) for f in files]
         for col, file, shot in zip(self.SHOT_COLUMNS, files, shots):
             cap = self.ws[f"{col}{self.row}"]
-            cap.value = self.caption(file)
+            cap.value = self.caption(tc_id, file)
             cap.font = Font(name="Calibri", size=8, italic=True, color="595959")
             cap.alignment = Alignment(vertical="top")
             shot.place(self.ws, f"{col}{self.row + 1}")
@@ -273,8 +370,9 @@ class EvidenceSheet:
         self.anchors[tc_id] = self.row
         for (locale, label, details), (own, shared) in zip(lines, self.shots_per_line(tc_id, lines, evidence)):
             start = self.row
-            self.write_line(tc_id, locale, label, details)
-            text_pt = self.LINE_PT * max(1, -(-len(details) // self.CHARS_PER_LINE))
+            seen = self.seen.text(details)
+            self.write_line(tc_id, locale, label, seen)
+            text_pt = self.LINE_PT * sum(max(1, -(-len(l) // self.CHARS_PER_LINE)) for l in seen.split("\n"))
             if not own:
                 if shared:
                     self.write_shared(shared)
@@ -284,7 +382,7 @@ class EvidenceSheet:
                 self.row += 1
                 continue
             self.file_rows.update({f: start for f in own})
-            image_pt = self.write_shots(own)
+            image_pt = self.write_shots(tc_id, own)
             self.ws.row_dimensions[self.row].height = self.CAPTION_PT
             self.row += 1
             remaining = max(image_pt + 6, text_pt - self.CAPTION_PT)
@@ -306,7 +404,7 @@ class TcWriter:
     STYLE_SOURCE = {"R": "Q"}
     EXTRA = ExtraColumn("R", "Final Validation By", "Q")
     WARN_MB = 20
-    WIDTHS = {"H": 55, "I": 38, "K": 60, "M": 30}
+    WIDTHS = {"E": 30, "G": 34, "H": 55, "I": 38, "K": 60, "M": 40}
     K_CHARS_PER_LINE = 70
     CHARS_PER_WIDTH = 1.1
 
@@ -389,9 +487,10 @@ class TcWriter:
         ws = wb[self.SHEET]
         ws["A3"] = self.config["project"]
         self.EXTRA.add(ws)
-        sheet = EvidenceSheet(wb, self.folder, self.unit, self.config.get("noShot", {}))
+        sheet = EvidenceSheet(wb, self.folder, self.unit, self.config.get("noShot", {}), WhatWasSeen(self.config["summary"]["pagePrefix"]))
         summary = Summary(self.config["summary"])
-        today = datetime.date.today()
+        today = datetime.date.fromisoformat(self.config["runDate"]) if self.config.get("runDate") else datetime.date.today()
+        precondition = Itemized("all rows", "precondition").numbered(self.config["precondition"])
         for col, width in self.WIDTHS.items():
             ws.column_dimensions[col].width = width
         for n, row in enumerate(self.config["rows"]):
@@ -401,11 +500,13 @@ class TcWriter:
             sheet.add(tc_id, lines, evidence)
             self.copy_style(ws, STYLE_ROW, r)
             actual = summary.text(lines, tc_id)
+            data = Itemized(tc_id, "data").items(row["data"]) + self.config.get("dataCommon", [])
+            expected = Itemized(tc_id, "expected").bullets(row["expected"])
             values = {
                 "A": row["requirement"], "B": row["complexity"], "C": row["priority"],
-                "D": tc_id, "E": self.config["precondition"],
-                "F": row["name"], "G": row["data"].replace("{locales}", self.config["locales"]), "H": row["steps"],
-                "I": row["expected"], "J": status, "K": actual, "L": self.AUTHOR,
+                "D": tc_id, "E": precondition,
+                "F": row["name"], "G": Itemized(tc_id, "data").bullets([d.replace("{locales}", self.config["locales"]) for d in data]), "H": row["steps"],
+                "I": expected, "J": status, "K": actual, "L": self.AUTHOR,
                 "M": remark, "O": today, "P": today, "Q": self.AUTHOR,
             }
             for col, value in values.items():
@@ -413,7 +514,7 @@ class TcWriter:
             ws[f"K{r}"].hyperlink = Hyperlink(ref=f"K{r}", location=f"'Evidence'!A{sheet.anchors[tc_id]}", tooltip=f"Open what was seen and the screenshots for {tc_id}")
             ws[f"O{r}"].number_format = ws[f"P{r}"].number_format = "yyyy-mm-dd"
             k_lines = sum(max(1, -(-len(line) // self.K_CHARS_PER_LINE)) for line in actual.split("\n"))
-            wrapped = {col: self.wrapped_lines(ws, col, text) for col, text in (("E", self.config["precondition"]), ("H", row["steps"]), ("I", row["expected"]), ("M", remark))}
+            wrapped = {col: self.wrapped_lines(ws, col, ws[f"{col}{r}"].value) for col in "EGHIM"}
             height = max(k_lines + 1, *(n + 1 for n in wrapped.values()), 8)
             ws.row_dimensions[r].height = min(409, 12 * height)
         sheet.finish()
