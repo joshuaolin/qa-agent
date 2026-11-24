@@ -65,8 +65,11 @@ exactly as many values as the template row has cells, or the engine stops.
    lands in the skill folder.
 4. **Diagrams over words.** The leads skim (asked on 2026-11-23: "ang daming
    words ... use table tapos bullet bullet sa loob"). Each section is one
-   short line plus a linear diagram; add a diagram whenever a section
-   explains a flow or a set of parts. Anything more goes in a table with
+   short line plus a diagram; add a diagram whenever a section
+   explains a flow or a set of parts. Linear when the real flow is a
+   line; a main lane plus side loops when parts are called on demand or
+   feed back (e.g. an agents chart: the request lane, an on-demand helper
+   above, the casebook below). Anything more goes in a table with
    short bullets inside the cells, never in paragraphs.
    **Diagrams in the same style.** Copy `diagrams.example.html` to the work
    folder as `diagrams.html`, one `.card` per diagram, render, then *look* at
