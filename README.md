@@ -98,24 +98,27 @@ it opens a project, so there is nothing to copy:
    npx playwright install chromium
    pip install openpyxl pillow
    ```
-5. Optional, for bug-investigator's automatic reminders: add these hooks to
-   `.claude/settings.json` (this project) or `~/.claude/settings.json` (all
-   projects). Each session then starts with the standing instructions and
-   latest lessons from `cases/`, and a prompt with bug or correction keywords
-   reminds the agent to load bug-investigator. The relative path below only
-   works in the project's `.claude/settings.json` (Claude Code started from
-   the repo root). In `~/.claude/settings.json`, install the skill under
-   `~/.claude/skills/` and use the absolute path to
-   `~/.claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs`, or every other
-   project fails to find the hook.
+5. bug-investigator's hooks ship in this repo's `.claude/settings.json`, so
+   they run as soon as you open the clone from its root folder (the hook path
+   is relative to it; Claude Code may ask you to trust the project's hooks
+   once). Each session starts with the standing
+   directives and latest lessons from `cases/`, and a prompt with bug or
+   correction keywords reminds the agent to load bug-investigator. To get
+   them in another project, copy `bug-investigator/` (with `cases/`) and the
+   `hooks` block of `.claude/settings.json` there. For every project, install
+   the skill under `~/.claude/skills/` and put this in
+   `~/.claude/settings.json` instead, with `<HOME>` replaced by your full
+   home folder path (`args` are not expanded by a shell):
    ```json
    {
      "hooks": {
-       "SessionStart": [{ "hooks": [{ "type": "command", "command": "node", "args": [".claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "session"], "timeout": 10 }] }],
-       "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "node", "args": [".claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "prompt"], "timeout": 10 }] }]
+       "SessionStart": [{ "hooks": [{ "type": "command", "command": "node", "args": ["<HOME>/.claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "session"], "timeout": 10 }] }],
+       "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "node", "args": ["<HOME>/.claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "prompt"], "timeout": 10 }] }]
      }
    }
    ```
+   Memory (`MEMORY.md`) is per user and is not in the repo; the cases are
+   what carries the standing rules over.
 6. In Claude Code, type `/qa-agent` and describe the task in plain words.
 
 ## Expected repo layout

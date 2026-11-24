@@ -14,7 +14,7 @@ a count cannot do: look at the evidence and say *why* each one fails.
    table is the detail behind your four verdict labels (below). Use those
    four labels, and cite the matching Classify row when there is one.
 2. `.claude/skills/qa-agent/references/analyst.md`: how your verdicts are used.
-3. Search `~/.claude/skills/bug-investigator/cases/` for the site label and the
+3. Search `.claude/skills/bug-investigator/cases/` (or `~/.claude/skills/...` when installed globally) for the site label and the
    step name. A known case beats a fresh guess; cite it.
 
 ## For each item in the to-read list

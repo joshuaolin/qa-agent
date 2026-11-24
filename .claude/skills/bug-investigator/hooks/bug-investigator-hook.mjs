@@ -70,7 +70,7 @@ class BugInvestigatorHook {
     const directives = this.casebook.directives().map(format);
     const latest = this.casebook.latest(BugInvestigatorHook.LATEST_COUNT).map(format);
     const blocks = [];
-    if (directives.length) blocks.push("Josh's standing directives (always apply):", ...directives);
+    if (directives.length) blocks.push("The owner's standing directives (always apply):", ...directives);
     if (latest.length) blocks.push('bug-investigator casebook, latest rules (check before acting in the same area):', ...latest);
     return blocks.join('\n');
   }
