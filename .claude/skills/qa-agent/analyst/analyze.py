@@ -166,7 +166,7 @@ class TrendWorkbook:
                 cell.fill = PatternFill("solid", fgColor=FILLS[worst])
 
     def failures(self):
-        ws = self.sheet("Recurring failures", ["Site", "Step reached", "Failure (numbers masked)", "Times", "Days", "Same failure at other sites, same batch", "Likely cause (from the message)", "Next", "Verdict from evidence (analyst-agent)", "Latest evidence"], [10, 20, 55, 7, 22, 20, 28, 32, 45, 30])
+        ws = self.sheet("Recurring failures", ["Site", "Step reached", "Failure (numbers masked)", "Times", "Days", "Same failure at other sites, same batch", "Likely cause (from the message)", "Next", "Verdict from evidence (failure-analyst)", "Latest evidence"], [10, 20, 55, 7, 22, 20, 28, 32, 45, 30])
         groups = defaultdict(list)
         for run in self.history.runs:
             if run.status == "FAIL":
@@ -222,7 +222,7 @@ class Analyst:
         print(f"{self.config['suite']}: {len(history.runs)} runs, {len(history.chains)} scheduled runs, {history.runs[0].at:%Y-%m-%d} to {history.runs[-1].at:%Y-%m-%d} -> {self.out}")
         for _, _, v in sites[:5]:
             print(f"  {v[1]}: 1st try {v[3]}/{v[2]}, flaky {v[4]}, failed {v[5]}, interrupted {v[6]} - {v[9]}")
-        print(f"  recurring failures: {len(failures)}; unclassified: {sum(f['cause'].startswith('unclassified') for f in failures)}; for analyst-agent: {brief}")
+        print(f"  recurring failures: {len(failures)}; unclassified: {sum(f['cause'].startswith('unclassified') for f in failures)}; for failure-analyst: {brief}")
 
 
 if __name__ == "__main__":

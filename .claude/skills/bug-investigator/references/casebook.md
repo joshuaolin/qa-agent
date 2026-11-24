@@ -47,20 +47,20 @@ put it where that moment loads it:
 
 | Rule is about | Write it into |
 | --- | --- |
-| Understanding the ask, replies, handover | joshtack-agent `in-your-own-words.md` or `communication.md` |
-| Code style, structure | joshtack-agent `code-style.md` |
-| Changes, deletes, side effects, test runs | joshtack-agent `safety.md` |
+| Understanding the ask, replies, handover | coding-partner `in-your-own-words.md` or `communication.md` |
+| Code style, structure | coding-partner `code-style.md` |
+| Changes, deletes, side effects, test runs | coding-partner `safety.md` |
 | A suite, site, locator, Figma or test case flow | the matching qa-agent reference |
 | How to investigate | this skill's `investigate.md` |
 | Only this one area, nowhere general | stays in the case, `not promoted` |
 
-x-agent reviews every promotion first; Josh's go is still what applies it:
+reviewer-agent reviews every promotion first; Josh's go is still what applies it:
 
 1. Draft the rule in the target reference's own style (short, imperative,
    why included).
-2. Send x-agent the case, the target file and the draft lines. ✗ → fix and
+2. Send reviewer-agent the case, the target file and the draft lines. ✗ → fix and
    re-check (max 2 rounds).
 3. Ask Josh in one line, with the verdict:
-   `Promote "<rule>" → <file>? (x-agent ✅) go / hindi`. Batch several into
+   `Promote "<rule>" → <file>? (reviewer-agent ✅) go / hindi`. Batch several into
    one line when there are many. Until his go the case says
-   `Promoted: pending go`; after it, `Promoted: <file> (x-agent ✅, go)`.
+   `Promoted: pending go`; after it, `Promoted: <file> (reviewer-agent ✅, go)`.

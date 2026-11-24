@@ -34,7 +34,7 @@ class Casebook {
   }
 }
 
-class ConanHook {
+class BugInvestigatorHook {
   static TRIGGERS = /\b(mali|ulit|bakit|sayang|sira|nasira|fail(ed|s|ing)?|errors?|bug|ulitin|hindi tama|iba (ang )?ibig|di mo nakuha|broken|wrong|incorrect|redo|messed up|not what i (meant|asked|wanted)|that['’]?s not (it|right|what)|does ?n[o'’]t work|did ?n[o'’]t work|not working|still (failing|broken)|why (did|does|is|isn['’]?t)|hindi yan|hindi ganyan|di yan|hindi gumana|di gumana|ayaw gumana)\b/i;
   static LATEST_COUNT = 5;
 
@@ -68,21 +68,21 @@ class ConanHook {
   sessionContext() {
     const format = (c) => `- ${c.name}: ${c.rule}`;
     const directives = this.casebook.directives().map(format);
-    const latest = this.casebook.latest(ConanHook.LATEST_COUNT).map(format);
+    const latest = this.casebook.latest(BugInvestigatorHook.LATEST_COUNT).map(format);
     const blocks = [];
     if (directives.length) blocks.push("Josh's standing directives (always apply):", ...directives);
-    if (latest.length) blocks.push('conan-agent casebook, latest rules (check before acting in the same area):', ...latest);
+    if (latest.length) blocks.push('bug-investigator casebook, latest rules (check before acting in the same area):', ...latest);
     return blocks.join('\n');
   }
 
   static AGENT_MESSAGE = /<agent-message\b|^Another Claude session sent a message/;
 
   promptContext(prompt) {
-    if (ConanHook.AGENT_MESSAGE.test(prompt)) return '';
-    if (!ConanHook.TRIGGERS.test(prompt)) return '';
-    return 'conan-agent: this prompt looks like a bug, failure or correction. Load the conan-agent skill: investigate with evidence, search cases/ first, and log the case with its prevention rule once solved.';
+    if (BugInvestigatorHook.AGENT_MESSAGE.test(prompt)) return '';
+    if (!BugInvestigatorHook.TRIGGERS.test(prompt)) return '';
+    return 'bug-investigator: this prompt looks like a bug, failure or correction. Load the bug-investigator skill: investigate with evidence, search cases/ first, and log the case with its prevention rule once solved.';
   }
 }
 
 const skillDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-await new ConanHook(process.argv[2], new Casebook(path.join(skillDir, 'cases'))).run();
+await new BugInvestigatorHook(process.argv[2], new Casebook(path.join(skillDir, 'cases'))).run();

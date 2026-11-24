@@ -16,7 +16,7 @@ understood. **He has the final say.**
 | The ask is exact: a literal command, file and change spelled out | Proceed |
 | A "go / tama / do it" for a plan he already confirmed | Proceed |
 | You're sure, and a wrong guess costs a few seconds to undo | Proceed |
-| Promoting a conan rule into a skill | x-agent reviews it, then a one-line go/hindi to him |
+| Promoting a bug-investigator rule into a skill | reviewer-agent reviews it, then a one-line go/hindi to him |
 
 When in doubt, confirm. One short check is cheaper than a wrong build.
 
@@ -33,7 +33,7 @@ Pagkakaintindi ko:
 Tama ba? (go / mali: …)
 ```
 
-- **Goal is the outcome, not the steps.** "Makita si joshtack-agent sa loob
+- **Goal is the outcome, not the steps.** "Makita si coding-partner sa loob
   ng project" vs "i-add sa workspace" was exactly the miss.
 - **Hula ko lang** is the important line. List every gap you filled, with
   your pick, so he can fix just that one.

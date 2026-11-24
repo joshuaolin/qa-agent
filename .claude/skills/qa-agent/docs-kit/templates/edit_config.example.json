@@ -75,7 +75,7 @@
       "op": "set_text",
       "after": "5. Review and Continuous Improvement",
       "style": "body",
-      "text": "QA judgement remains essential, and it is now backed by a second check. The agent confirms unclear requests, does the work, and x-agent reviews it before hand-over. A person then approves the output. Every confirmed bug, mistake or instruction becomes a conan-agent case with a prevention rule. x-agent reviews the draft rule and I approve it before it is written into the relevant .md reference, so later runs follow it."
+      "text": "QA judgement remains essential, and it is now backed by a second check. The agent confirms unclear requests, does the work, and reviewer-agent reviews it before hand-over. A person then approves the output. Every confirmed bug, mistake or instruction becomes a bug-investigator case with a prevention rule. reviewer-agent reviews the draft rule and I approve it before it is written into the relevant .md reference, so later runs follow it."
     },
     {
       "op": "replace_image",
@@ -89,11 +89,11 @@
       "items": [
         {
           "style": "note",
-          "text": "In its first review (23 Nov 2026), x-agent found 5 issues in the agent’s own work, including one mistake the agent had repeated. All were fixed before hand-over."
+          "text": "In its first review (23 Nov 2026), reviewer-agent found 5 issues in the agent’s own work, including one mistake the agent had repeated. All were fixed before hand-over."
         },
         {
           "style": "body",
-          "text": "Every review is recorded in a trust ledger: issues found, issues fixed, issues I confirmed, and issues I found that x-agent missed. The missed count is the main signal for when a task can be automated further."
+          "text": "Every review is recorded in a trust ledger: issues found, issues fixed, issues I confirmed, and issues I found that reviewer-agent missed. The missed count is the main signal for when a task can be automated further."
         }
       ]
     },
@@ -103,13 +103,13 @@
       "rows": [
         [
           "Lessons and instructions",
-          "conan-agent cases (one .md per case)",
-          "~\\.claude\\skills\\conan-agent\\cases (my machine)"
+          "bug-investigator cases (one .md per case)",
+          "~\\.claude\\skills\\bug-investigator\\cases (my machine)"
         ],
         [
           "Review history",
-          "x-agent trust ledger",
-          "~\\.claude\\skills\\x-agent\\ledger.md (my machine)"
+          "reviewer-agent trust ledger",
+          "~\\.claude\\skills\\reviewer-agent\\ledger.md (my machine)"
         ]
       ]
     },
@@ -131,7 +131,7 @@
         },
         {
           "style": "note",
-          "text": "On my setup the agent also restates unclear requests first, attaches an x-agent verdict to every hand-over, and logs corrections as conan-agent cases (x-agent reviews each new rule and I approve it). These are not in the shared qa-agent repo yet: its joshtack-agent is still v1.0 (20 Nov 2026), and conan-agent and x-agent are not included."
+          "text": "On my setup the agent also restates unclear requests first, attaches a reviewer-agent verdict to every hand-over, and logs corrections as bug-investigator cases (reviewer-agent reviews each new rule and I approve it). These are not in the shared qa-agent repo yet: its coding-partner is still v1.0 (20 Nov 2026), and bug-investigator and reviewer-agent are not included."
         }
       ]
     },
@@ -145,7 +145,7 @@
         },
         {
           "style": "body",
-          "text": "qa-agent no longer works alone. Four agents now share the work: one does the QA, one holds the coding standards, one remembers every lesson, and one reviews the result before a person sees it. A QA reviewer still has the final say. conan-agent, x-agent and the newest joshtack-agent rules currently run on my setup only."
+          "text": "qa-agent no longer works alone. Four agents now share the work: one does the QA, one holds the coding standards, one remembers every lesson, and one reviews the result before a person sees it. A QA reviewer still has the final say. bug-investigator, reviewer-agent and the newest coding-partner rules currently run on my setup only."
         },
         {
           "image": "ecosystem.png",
@@ -153,7 +153,7 @@
         },
         {
           "style": "note",
-          "text": "Each agent is a set of .md instructions. Two hooks keep them connected: every session starts with the latest lessons, and a message with bug or correction keywords reminds the agent to load conan-agent."
+          "text": "Each agent is a set of .md instructions. Two hooks keep them connected: every session starts with the latest lessons, and a message with bug or correction keywords reminds the agent to load bug-investigator."
         },
         {
           "table": "table3",
@@ -169,17 +169,17 @@
               "Any QA request"
             ],
             [
-              "joshtack-agent",
+              "coding-partner",
               "Coding standards: OOP and config-driven code, no comments, safe changes, the exact command to run. On my setup it also restates an unclear request before acting",
               "Any coding or scripting request"
             ],
             [
-              "conan-agent",
+              "bug-investigator",
               "Bug investigation and memory: finds the cause from evidence, logs every bug, mistake and instruction as a case with a prevention rule",
               "A failure, a “why”, or a correction"
             ],
             [
-              "x-agent",
+              "reviewer-agent",
               "Reviewer (crosscheck): an independent, read-only review of the agent’s work against our standards and past cases",
               "Before any non-trivial work is handed over"
             ]

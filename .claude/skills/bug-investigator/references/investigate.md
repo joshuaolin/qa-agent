@@ -22,7 +22,7 @@ right answers.
    point → the function that failed → what it calls. Not just the file whose
    name sounds right.
 4. **Reproduce before you fix.** Run the failing case yourself, safely (see
-   joshtack-agent's safety.md, and qa-agent's run-safely.md in repos that
+   coding-partner's safety.md, and qa-agent's run-safely.md in repos that
    have it). If it doesn't reproduce, say so. That is a finding.
 5. **Compare with a sibling that works.** The same flow on another site,
    the last green run, yesterday's log. The difference is usually the cause.

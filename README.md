@@ -27,9 +27,13 @@ updated `.md`, so the next run already knows it.
 | `testcase-doc.md` | Writes manual test cases from a ticket into a copy of your Excel tracker | "Write test cases for PROJ-123" |
 | `team-doc-update.md` (+ `docs-kit/`) | Updates a team Word document in its own style: same-style diagrams, every claim checked, reviewed before hand-over | "Update the validation doc based on the current setup" |
 
-## Companion skill: joshtack-agent
+## Agent names
 
-`.claude/skills/joshtack-agent/` is the general coding partner that `qa-agent` builds on. It
+> Renamed on 24 Nov 2026 so each name says what it does: joshtack-agent → coding-partner, conan-agent → bug-investigator, x-agent → reviewer-agent, analyst-agent → failure-analyst. If you installed the old folders, delete them, copy the new ones, and update the hook paths in step 5.
+
+## Companion skill: coding-partner
+
+`.claude/skills/coding-partner/` is the general coding partner that `qa-agent` builds on. It
 holds the rules for every project, QA or not: OOP and config-driven code with
 no comments, no side effects while testing, short Taglish replies that end
 with the exact command to run, evidence-based debugging, and node-cron
@@ -43,27 +47,27 @@ schedulers on Windows.
 | `communication.md` | Replies, explanations, handing over commands, status check-ins |
 | `schedulers-windows.md` | Cron jobs and schedulers on a Windows laptop |
 
-## Companion skill: conan-agent
+## Companion skill: bug-investigator
 
-`.claude/skills/conan-agent/` is the bug investigator and the team's memory.
+`.claude/skills/bug-investigator/` is the bug investigator and the team's memory.
 It finds causes from evidence (code read, output seen, a run done), and logs
 every bug, mistake and instruction as a case in `cases/` with a prevention
 rule. A rule that applies beyond its case is drafted into the skill it
-belongs to; x-agent reviews the draft and a person gives the go.
+belongs to; reviewer-agent reviews the draft and a person gives the go.
 
 | Reference | When it loads |
 |---|---|
-| `investigate.md` | Anything broken, slow or flaky (moved here from joshtack-agent) |
+| `investigate.md` | Anything broken, slow or flaky (moved here from coding-partner) |
 | `casebook.md` | A case is solved, a correction or an instruction was given |
 
-## Companion agent: x-agent
+## Companion agent: reviewer-agent
 
-`.claude/agents/x-agent.md` is a read-only reviewer subagent, and
-`.claude/skills/x-agent/` tells the main agent when to call it: before any
+`.claude/agents/reviewer-agent.md` is a read-only reviewer subagent, and
+`.claude/skills/reviewer-agent/` tells the main agent when to call it: before any
 non-trivial work is reported done. It checks the work against the ask, the
 skills' rules and the casebook, returns `✅ PASS` or `✗ ISSUES` with
 file:line findings, and every review goes into `ledger.md`, with columns for
-what a person confirmed and what x-agent missed. The missed count is the
+what a person confirmed and what reviewer-agent missed. The missed count is the
 main signal for how far the review can be trusted.
 
 ## Install
@@ -78,11 +82,11 @@ it opens a project, so there is nothing to copy:
    cd qa-agent
    claude
    ```
-   Type `/` and `/qa-agent` and `/joshtack-agent` show up in the suggestions.
+   Type `/` and `/qa-agent` and `/coding-partner` show up in the suggestions.
    If they don't, start a new session or reload the VS Code window.
 2. To use them in another project, copy the four folders under
    `.claude/skills/` into that project's `.claude/skills/` and
-   `.claude/agents/x-agent.md` into its `.claude/agents/`, or into
+   `.claude/agents/reviewer-agent.md` into its `.claude/agents/`, or into
    `~/.claude/skills/` and `~/.claude/agents/` for every project. A copy
    doesn't update itself: copy again after you pull changes.
 3. Open `.claude/skills/qa-agent/SKILL.md` and fill in **Project settings**
@@ -94,21 +98,21 @@ it opens a project, so there is nothing to copy:
    npx playwright install chromium
    pip install openpyxl pillow
    ```
-5. Optional, for conan-agent's automatic reminders: add these hooks to
+5. Optional, for bug-investigator's automatic reminders: add these hooks to
    `.claude/settings.json` (this project) or `~/.claude/settings.json` (all
    projects). Each session then starts with the standing instructions and
    latest lessons from `cases/`, and a prompt with bug or correction keywords
-   reminds the agent to load conan-agent. The relative path below only
+   reminds the agent to load bug-investigator. The relative path below only
    works in the project's `.claude/settings.json` (Claude Code started from
    the repo root). In `~/.claude/settings.json`, install the skill under
    `~/.claude/skills/` and use the absolute path to
-   `~/.claude/skills/conan-agent/hooks/conan-hook.mjs`, or every other
+   `~/.claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs`, or every other
    project fails to find the hook.
    ```json
    {
      "hooks": {
-       "SessionStart": [{ "hooks": [{ "type": "command", "command": "node", "args": [".claude/skills/conan-agent/hooks/conan-hook.mjs", "session"], "timeout": 10 }] }],
-       "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "node", "args": [".claude/skills/conan-agent/hooks/conan-hook.mjs", "prompt"], "timeout": 10 }] }]
+       "SessionStart": [{ "hooks": [{ "type": "command", "command": "node", "args": [".claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "session"], "timeout": 10 }] }],
+       "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "node", "args": [".claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "prompt"], "timeout": 10 }] }]
      }
    }
    ```

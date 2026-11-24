@@ -7,7 +7,7 @@ Two parts, because counting and judging are different jobs:
 | Part | Does | Where |
 | --- | --- | --- |
 | Engine | Counts every run: pass on first try, flaky (failed then passed on retry), failed after all retries; groups failures by step + message; first guess at the cause from the message | `analyst/analyze.py` + one data file per suite (`analyst/b2b.json`) |
-| analyst-agent | Reads the evidence (FAILURE html/png, step shots) of the top recurring failures and says application defect / environment / data / test instability, with the file that proves it | `.claude/agents/analyst-agent.md` (read-only subagent) |
+| failure-analyst | Reads the evidence (FAILURE html/png, step shots) of the top recurring failures and says application defect / environment / data / test instability, with the file that proves it | `.claude/agents/failure-analyst.md` (read-only subagent) |
 
 ## Run it
 
@@ -17,11 +17,11 @@ python -B -I .claude\skills\qa-agent\analyst\analyze.py . .claude\skills\qa-agen
 
 1. The engine writes the workbook and `qa-reports\analyst\b2b-to-read.json`
    (the top unread recurring failures; folders: the oldest + the 2 newest each).
-2. Spawn **analyst-agent** with that file's path. It returns a JSON array.
+2. Spawn **failure-analyst** with that file's path. It returns a JSON array.
 3. Save that array as `qa-reports\analyst\b2b-verdicts.json`. Merge it with
    earlier verdicts; match = label + signature key (`key`). Re-run the engine: column
    "Verdict from evidence" fills in, and those items drop off the to-read list.
-4. x-agent before hand-over if the report goes to anyone but the owner.
+4. reviewer-agent before hand-over if the report goes to anyone but the owner.
 
 Read-only end to end: it reads `reports/`, never re-runs a suite, never
 changes data. A verdict that says data (an account lost access) is

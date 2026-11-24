@@ -76,7 +76,7 @@ exactly as many values as the template row has cells, or the engine stops.
    2026-11-23). When the leads give notes, put them in a diagram as
    written, with the real status of each item.
 5. **Every claim matches the system.**
-   - Who approves what: x-agent reviews, the owner gives the go.
+   - Who approves what: reviewer-agent reviews, the owner gives the go.
    - What teammates actually get: anything only on one person's machine says
      "on my setup" / "(my machine)"; check `qa-agent-public` before
      saying something ships.
@@ -89,10 +89,10 @@ exactly as many values as the template row has cells, or the engine stops.
 7. **Copy `<workdir>\out.docx` to `<name>-v<N>.docx` next to the original**, then run
    `check_docx.py` on that copy. Locked target (`~$` file or an open
    handle) → the next `-v<N>`, and say so; never overwrite a file someone has open.
-8. **x-agent before hand-over**, max 2 rounds, then a ledger row.
-9. **Hand-over:** the path, a "what changed" table, x-agent's verdict, and
+8. **reviewer-agent before hand-over**, max 2 rounds, then a ledger row.
+9. **Hand-over:** the path, a "what changed" table, reviewer-agent's verdict, and
    what was not checked.
 
 Unicode in the config JSON (curly quotes, dashes) is fine as typed characters;
-invisible ones are not. See joshtack-agent code-style, "Invisible
+invisible ones are not. See coding-partner code-style, "Invisible
 characters".
