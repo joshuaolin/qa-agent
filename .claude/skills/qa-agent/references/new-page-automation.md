@@ -10,11 +10,12 @@ the features to cover. Everything below is how the agent turns that into code.
 | Layer | File | Job |
 |---|---|---|
 | Actions | `main/ActionDriver.js` | Every generic action, once: `navigateURL`, `clickElement`, `setText`, `hoverElement`, `verifyTitle`, `assertElementDisplayed`, `assertElementContainsText`. New kind of action → add it here first |
-| Pages | `pom/<Name>Page.js` | One class per page. Each element is a static object: its `locator` plus only the actions the tests use on it, all delegating to `ActionDriver` |
+| Site folder | `tests/<Site>/`, `pom/<Site>/`, `resources/<Site>/`, and `main/<Site>/` for a site engine | **Every new website gets its own folder in each layer**, named after the site, so another QA can copy or drop it whole. Nothing site-specific goes loose in `tests/`, `pom/` or `resources/`; the only shared edit is the page registration in `main/PageInitialize.js` |
+| Pages | `pom/<Site>/<Name>Page.js` | One class per page. Each element is a static object: its `locator` plus only the actions the tests use on it, all delegating to `ActionDriver` |
 | Registry | `main/PageInitialize.js` | Calls `<Name>Page.initialize(page)` for every page |
 | Hooks | `main/Hooks.js` | `beforeEach`: extra timeout, initialize pages. `afterEach`: screenshot + report attachment on failure |
-| Data | `resources/testdata.json` | Named arrays per scenario: `validCredentials`, `invalidCredentials`, … |
-| Tests | `tests/<feature>.spec.js` | One `test.describe` per feature, data-driven with `forEach`, `test.step` for action then verify |
+| Data | `resources/<Site>/testdata.json` | Named arrays per scenario: `validCredentials`, `invalidCredentials`, … |
+| Tests | `tests/<Site>/<feature>.spec.js` | One `test.describe` per feature, data-driven with `forEach`, `test.step` for action then verify |
 
 ## Recipe
 
@@ -25,9 +26,9 @@ the features to cover. Everything below is how the agent turns that into code.
    Each one must match exactly one element.
 3. **Missing action?** Add it to `ActionDriver` (one method, same shape as the
    others) before using it in a page.
-4. **Write the page** `pom/<Name>Page.js`:
+4. **Write the page** `pom/<Site>/<Name>Page.js` (create the `<Site>/` folders first if the site is new):
    ```js
-   import ActionDriver from '../main/ActionDriver';
+   import ActionDriver from '../../main/ActionDriver';
 
    class CartPage {
        static actiondriver;
@@ -57,19 +58,19 @@ the features to cover. Everything below is how the agent turns that into code.
    The class name must equal the file name. Use `CartPage.actiondriver`, not
    `this`, inside the element methods (`this` there is the element object,
    which is how `this.locator` works).
-5. **Register it** in `main/PageInitialize.js`: import it, then add
+5. **Register it** in `main/PageInitialize.js`: import it from `../pom/<Site>/CartPage`, then add
    `CartPage.initialize(page);`.
-6. **Add data** to `resources/testdata.json` as a named array per scenario.
+6. **Add data** to `resources/<Site>/testdata.json` as a named array per scenario.
    Real credentials go to `.env`, never this file.
-7. **Write the spec** `tests/<feature>.spec.js`:
+7. **Write the spec** `tests/<Site>/<feature>.spec.js`:
    ```js
    import { test } from '@playwright/test';
-   import ActionDriver from '../main/ActionDriver';
-   import initializePages from '../main/PageInitialize';
-   import LoginPage from '../pom/LoginPage';
-   import CartPage from '../pom/CartPage';
-   import '../main/Hooks';
-   import { validCredentials } from '../resources/testdata.json';
+   import ActionDriver from '../../main/ActionDriver';
+   import initializePages from '../../main/PageInitialize';
+   import LoginPage from '../../pom/SauceDemo/LoginPage';
+   import CartPage from '../../pom/SauceDemo/CartPage';
+   import '../../main/Hooks';
+   import { validCredentials } from '../../resources/SauceDemo/testdata.json';
 
    async function login(page, { username, password }) {
        const actiondriver = new ActionDriver(page);
@@ -147,8 +148,8 @@ then one live run of an older suite that uses the same base files.
 ## Run and report
 
 ```
-npx playwright test tests/<feature>.spec.js --project=chromium --headed
-npx playwright test tests/<feature>.spec.js --project=chromium
+npx playwright test tests/<Site>/<feature>.spec.js --project=chromium --headed
+npx playwright test tests/<Site>/<feature>.spec.js --project=chromium
 ```
 
 Done when the spec passes live, a failing case shows its screenshot in the

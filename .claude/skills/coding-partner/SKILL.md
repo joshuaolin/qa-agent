@@ -54,3 +54,9 @@ its prevention rule back into the skill it belongs to.
    and promote the rule so it doesn't happen twice.
 13. **Crosscheck before "tapos na".** Non-trivial work goes through
    reviewer-agent first; show Josh the verdict and log it in its ledger.
+14. **One folder per website or app under test.** A new site gets its own
+   folder in every layer (tests, pages, data, and its engine if it has one),
+   named after the site, never files dropped loose in the shared root. The
+   folder is the unit another QA copies or removes. Shared code (actions,
+   hooks, utilities) stays site-agnostic; the only shared edit is the
+   one-line registration of the site's pages.
