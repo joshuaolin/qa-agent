@@ -128,7 +128,7 @@ The references describe a POM + data-driven Playwright framework:
 ```
 main/ActionDriver.js        generic actions, written once
 main/<Thing>Checker.js      shared engines (extend BaseChecker)
-pom/<Name>Page.js           one class per page: locators + actions
+pom/<Site>/<Name>Page.js    one class per page: locators + actions
 resources/<Site>/*.json     URLs, test data, per-site config
 tests/<Site>/*.spec.js      thin loops over the data
 reports/                    Excel per suite (git-ignored)

@@ -45,11 +45,17 @@ He asks "anong syntax" / "pano ko i-run" constantly, so end any build or
 change with:
 
 ```
-Folder:  C:\…\<project>          (right click → Open in Terminal)
-Run:     npm run test:b2b:am
-Stop:    Ctrl + C
-Check:   where the output or schedule shows up
+Folder:    C:\…\<project>          (right click → Open in Terminal)
+Suite:     npm run test:saucedemo
+One spec:  npx playwright test tests/SauceDemo/login.spec.js --project=chromium
+Headed:    add --headed to see the browser
+Stop:      Ctrl + C
+Check:     where the output, report or schedule shows up
 ```
+
+Give the suite line, a one-spec line and the headed variant for anything
+runnable you added or changed, so any QA can run it without asking. A
+scheduled bot uses the block in [schedulers-windows.md](schedulers-windows.md).
 
 PowerShell syntax (`$env:X='y'; npm run …`), not bash. If cmd syntax differs
 (`set X=y&& npm run …`), give both.

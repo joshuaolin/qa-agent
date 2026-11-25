@@ -58,7 +58,7 @@ A design QA finding can feed test cases (figma-check → testcase-doc).
 | --- | --- | --- |
 | Actions | `main/ActionDriver.js` | Every generic action, once |
 | Engines | `main/<Thing>Checker.js`, `main/BaseChecker.js` | Shared logic for a kind of check |
-| Pages | `pom/<Name>Page.js` | One class per page, locators + the actions tests use |
+| Pages | `pom/<Site>/<Name>Page.js` | One class per page, locators + the actions tests use |
 | Data | `resources/<Site>/*.json` | URLs, test data, per-site config |
 | Tests | `tests/<Site>/<thing>.spec.js` | Thin loops over data |
 | Reports | `reports/` | Excel per suite (git-ignored) |

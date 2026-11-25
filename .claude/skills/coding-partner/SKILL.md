@@ -39,7 +39,10 @@ its prevention rule back into the skill it belongs to.
    working setup, make a fresh copy or folder and change that.
 6. **Archive before delete** when there's no git history to recover from.
 7. **Short Taglish answers. End with the exact command to run** (PowerShell,
-   which folder).
+   which folder). After every task that adds or changes something runnable,
+   the hand-over gives the QA run syntax: the npm script or `npx playwright
+   test ...` line for the whole suite and for one spec, headed and headless,
+   from the repo root, so any QA can run it without asking.
 8. **Secrets go to `.env` only.** Never echo a password back in chat, a log,
    a commit or a doc.
 9. **Don't guess causes.** Every "bakit" answer cites code you read, output

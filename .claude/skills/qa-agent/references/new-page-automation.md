@@ -9,13 +9,13 @@ the features to cover. Everything below is how the agent turns that into code.
 
 | Layer | File | Job |
 |---|---|---|
-| Actions | `main/ActionDriver.js` | Every generic action, once: `navigateURL`, `clickElement`, `setText`, `hoverElement`, `verifyTitle`, `assertElementDisplayed`, `assertElementContainsText`. New kind of action → add it here first |
+| Actions | `main/ActionDriver.js` | Every generic action, once: `navigateURL`, `clickElement`, `setText`, `hoverElement`, `verifyTitle`, `assertElementDisplayed`, `assertElementContainsText` (all soft), plus `ActionDriver.verifyStep` / `ActionDriver.assertNoSoftFailures` (the gate, see "Double soft assertion"). New kind of action → add it here first |
 | Site folder | `tests/<Site>/`, `pom/<Site>/`, `resources/<Site>/`, and `main/<Site>/` for a site engine | **Every new website gets its own folder in each layer**, named after the site, so another QA can copy or drop it whole. Nothing site-specific goes loose in `tests/`, `pom/` or `resources/`; the only shared edit is the page registration in `main/PageInitialize.js` |
 | Pages | `pom/<Site>/<Name>Page.js` | One class per page. Each element is a static object: its `locator` plus only the actions the tests use on it, all delegating to `ActionDriver` |
 | Registry | `main/PageInitialize.js` | Calls `<Name>Page.initialize(page)` for every page |
 | Hooks | `main/Hooks.js` | `beforeEach`: extra timeout, initialize pages. `afterEach`: screenshot + report attachment on failure |
 | Data | `resources/<Site>/testdata.json` | Named arrays per scenario: `validCredentials`, `invalidCredentials`, … |
-| Tests | `tests/<Site>/<feature>.spec.js` | One `test.describe` per feature, data-driven with `forEach`, `test.step` for action then verify |
+| Tests | `tests/<Site>/<feature>.spec.js` | One `test.describe` per feature, data-driven with `forEach`, `test.step` for an action, `ActionDriver.verifyStep` for a verify |
 
 ## Recipe
 
@@ -68,6 +68,7 @@ the features to cover. Everything below is how the agent turns that into code.
    import ActionDriver from '../../main/ActionDriver';
    import initializePages from '../../main/PageInitialize';
    import LoginPage from '../../pom/SauceDemo/LoginPage';
+   import HomePage from '../../pom/SauceDemo/HomePage';
    import CartPage from '../../pom/SauceDemo/CartPage';
    import '../../main/Hooks';
    import { validCredentials } from '../../resources/SauceDemo/testdata.json';
@@ -90,11 +91,12 @@ the features to cover. Everything below is how the agent turns that into code.
            await login(page, validCredentials[0]);
        });
 
-       test('Checkout from cart', async () => {
-           await test.step('Open checkout', async () => {
-               await CartPage.CheckoutButton.clickElement();
+       test('Cart lists the added product', async () => {
+           await test.step('Add the backpack and open the cart', async () => {
+               await HomePage.AddToCartButton.clickElement('sauce-labs-backpack');
+               await HomePage.CartLink.clickElement();
            });
-           await test.step('Verify checkout page', async () => {
+           await ActionDriver.verifyStep('Verify the cart lists the backpack', async () => {
                await CartPage.ItemName.assertElementContainsText('Sauce Labs Backpack');
            });
        });
@@ -108,7 +110,32 @@ the features to cover. Everything below is how the agent turns that into code.
   in one file, two describes. The report then shows which feature broke.
 - **Data-driven:** `data.forEach((item, index) => test(\`<Scenario> ${index + 1}\`, …))`.
   The title must say the scenario (valid vs invalid) and be unique.
-- **Steps:** `test.step('<do something>')` then `test.step('Verify <outcome>')`.
+- **Steps:** `test.step('<do something>')` then `ActionDriver.verifyStep('Verify <outcome>', …)`.
+- **Double soft assertion (the standard).** Every ActionDriver assertion is
+  `expect.soft`, so all checks in a Verify step run and every mismatch is
+  reported in one run (layer 1). `ActionDriver.verifyStep` ends the step with
+  `assertNoSoftFailures()`, a hard gate that stops the test before the next
+  action works on a broken page (layer 2). A check inside an action step
+  that the next action depends on (a badge before Reset, the URL after a
+  Back click) is followed by `ActionDriver.assertNoSoftFailures()` right
+  there. If your `main/ActionDriver.js` doesn't have these yet, add them
+  first (import `test` too: `import { expect, test } from '@playwright/test';`),
+  and switch each `await expect(` in its assertion methods to
+  `await expect.soft(`:
+  ```js
+  static async verifyStep(title, body) {
+      await test.step(title, async () => {
+          await body();
+          ActionDriver.assertNoSoftFailures();
+      }, { box: true });
+  }
+
+  static assertNoSoftFailures() {
+      const failures = test.info().errors.map((error) => error.message);
+      expect(failures, 'soft assertion failures in this test').toEqual([]);
+  }
+  ```
+  `box: true` makes the report point at the spec line, not ActionDriver.
 - **Repeated flow** (login) → a helper function in the spec. Once two specs
   need it, move it to a page method or ActionDriver.
 - **Precondition** for a whole feature → `test.beforeEach` inside that describe.
@@ -128,8 +155,8 @@ any of them, list who depends on what and keep their contract:
 |---|---|
 | `main/Hooks.js` | How it registers (on import vs a setup function), the timeout it adds, the failure screenshot. Callers silently lose these if it changes |
 | `main/PageInitialize.js` | Only `initialize(page)` calls, nothing that can throw |
-| `main/ActionDriver.js` | Add methods, never rename or change an existing one's signature |
-| `resources/testdata.json` | Rename an array only together with every spec that imports it |
+| `main/ActionDriver.js` | Add methods, never rename or change an existing one's signature. Assertions are soft (`expect.soft`) and `verifyStep` gates them; a new assertion follows the same shape |
+| `resources/<Site>/testdata.json` | Rename an array only together with every spec that imports it |
 | `playwright.config.js` | No new `globalSetup` that deletes folders, no change to retries or teardowns without [shared-change-regression.md](shared-change-regression.md) |
 
 Proof a change kept the contract: `npm run validate`, then

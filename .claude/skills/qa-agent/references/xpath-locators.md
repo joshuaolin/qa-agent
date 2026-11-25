@@ -27,7 +27,7 @@ Most stable first: `data-test` / `data-testid` → `id` → `name` → `aria-lab
 1. Read the failure: which page object and element (`CartPage.CartItemName`), and why (not found, N matches, hidden).
 2. Open the live page at that step (`--headed`, or Playwright inspector / DOM snapshot) and look at the element and its neighbours.
 3. Rebuild it with the first pattern from the table that matches **exactly one** visible element. Check the count in the console: `$x("<xpath>").length === 1`.
-4. Change only that element's `locator` string in its `pom/<Name>Page.js`. Don't touch the methods, the element name, or other pages.
+4. Change only that element's `locator` string in its `pom/<Site>/<Name>Page.js`. Don't touch the methods, the element name, or other pages.
 5. Rerun the spec that failed, plus every spec that uses that page (`grep -r "<Name>Page" tests`). If the page is shared by more than one site, follow [shared-change-regression.md](shared-change-regression.md).
 6. Report one line: element, old locator → new locator, the attribute it now anchors on.
 

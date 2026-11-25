@@ -40,4 +40,4 @@ thing and touch it. Update it whenever a run shows the page changed.
   | Cart badge | `//span[@class='shopping_cart_badge']` | only exists when the cart is not empty |
 
 - **Known quirks:** the cart keeps its items after a reload (local storage).
-- **Covered by:** `tests/inventory.spec.js`
+- **Covered by:** `tests/<Site>/inventory.spec.js`
