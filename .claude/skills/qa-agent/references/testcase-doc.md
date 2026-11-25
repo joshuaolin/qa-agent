@@ -120,6 +120,12 @@ that reaches real people while executing.
    the page, AND nothing on the page is missing from the spec. Scope each check
    to the item it is about (one card, one accordion item), never the whole
    section. Dump the real page text before calling a copy difference a finding.
+   Compare the layout too: for a page built from existing modules, measure each
+   block's heading alignment and left/right gap against the same component on a
+   live page, as its own "[Added QA check]" row with a table shot and a live
+   reference shot (`TC-<TICKET>-<seq>-ref-<locale>-<page>.png`, captioned as a
+   reference). Anything that looks off in a screenshot is checked and written in
+   the file before hand-over.
    For exact CSS parity use [figma-check.md](figma-check.md).
 4. **Fill the row.**
    - **K Actual Result:** short enough to read without clicking: one line per

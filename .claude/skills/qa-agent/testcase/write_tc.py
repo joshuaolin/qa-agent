@@ -288,6 +288,7 @@ class EvidenceSheet:
     CAPTION_PT = 14
     NO_SHOT = "component not on this page; no screenshot taken"
     NOT_EXECUTED = "ticket screenshot (expected look, not a run)"
+    REFERENCE = "reference: the same component on a live page, not this ticket's page"
 
     def __init__(self, wb, folder, unit, no_shot, seen):
         self.ws = wb.create_sheet("Evidence")
@@ -318,6 +319,8 @@ class EvidenceSheet:
         return out
 
     def caption(self, tc_id, file):
+        if "-ref-" in file:
+            return f"{self.REFERENCE}: {file}"
         if "-step" not in file:
             return f"{self.NOT_EXECUTED}: {file}"
         step = file.rsplit("-step", 1)[-1].split(".")[0]

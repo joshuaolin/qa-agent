@@ -1,4 +1,4 @@
-> Use when: updating or writing a team-facing Word document about the framework, the agents or a QA process ("update mo tong file", "i-update yung doc based sa current", a write-up for the team or leads).
+> Use when: updating or writing a team-facing Word document about the framework, the agents or a QA process, only when asked ("gawa ka ng doc", "write a doc for the team", "update mo tong file", "i-update yung doc based sa current", a write-up for the team or leads).
 
 # Team doc update
 
@@ -15,6 +15,7 @@ Tools live in `docs-kit/` (run everything from the repo root):
 | `scripts/check_docx.py <docx>` | XML parses, image refs resolve, unique `docPr` ids, png type, no literal U+FEFF |
 | `scripts/render_diagrams.cjs <workdir>` | Renders every `.card[id]` in `<workdir>\diagrams.html` to `<id>.png` with the repo's Playwright |
 | `scripts/docx_edit.py <config.json>` | The engine: clones the doc's own paragraphs and tables and applies the operations listed in the JSON. Paths in the JSON are relative to it |
+| `scripts/patch_diagrams.py <workdir> <vN-diagrams.json>` | Writes `<workdir>\diagrams.html` from the last version's html (`from`) plus exact `[old, new]` swaps (`changes`); each `old` must match once, or it stops |
 | `templates/edit_config.example.json` | A real doc update as data: `templates` (element indices to clone, picked with `docx_body.py`) and `operations` |
 | `templates/diagrams.example.html` | Plain diagram style: light card, teal heading, boxes and arrows, status tags. No robot or person figures |
 
