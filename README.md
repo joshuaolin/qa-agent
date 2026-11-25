@@ -1,4 +1,6 @@
-# qa-agent
+# AI QA Agent
+
+> Created and maintained by **Joshua Olin** · SDE · [Apache-2.0](LICENSE) · credit required, see [NOTICE](NOTICE)
 
 A Claude Code skill that works as the QA engineer of a Playwright repo.
 
@@ -78,8 +80,8 @@ it opens a project, so there is nothing to copy:
 
 1. Clone the repo and open the folder in Claude Code:
    ```
-   git clone https://github.com/joshuaolin/qa-agent.git
-   cd qa-agent
+   git clone https://github.com/joshuaolinessilor/ai-qa-agent.git
+   cd ai-qa-agent
    claude
    ```
    Type `/` and `/qa-agent` and `/coding-partner` show up in the suggestions.
@@ -148,6 +150,19 @@ If your repo looks different, edit the references. They are plain markdown.
 - **Keep it honest:** whenever the agent gets something wrong, fix the
   reference, not just the output.
 
-## Built by
+## Author and license
 
-Josh, SDE.
+Created, designed and maintained by **Joshua Olin** · SDE.
+
+Licensed under [Apache-2.0](LICENSE). You may use, change and share it,
+under these conditions (section 4 of the license):
+
+| You must | How |
+| --- | --- |
+| Keep the credit | Keep [NOTICE](NOTICE) and the "Built and maintained by Joshua Olin · SDE" line in every skill and agent, in every copy and fork |
+| Mark your changes | Say in each changed file that you changed it |
+| Credit when you share | Name "Joshua Olin · SDE" as the original author wherever you share, demo or present it |
+
+Every Claude session in this repo shows the credit at start
+(.claude/hooks/attribution.mjs). If the NOTICE, the LICENSE or a signature
+line is removed, the session opens with an attribution warning instead.

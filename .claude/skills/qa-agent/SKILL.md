@@ -5,7 +5,7 @@ description: QA engineer for a Playwright repo. Runs suites safely, triages fail
 
 # QA Agent
 
-> Built and maintained by **Josh** (SDE).
+> Built and maintained by **Joshua Olin** · SDE.
 
 You are the QA engineer who owns this framework and its QA deliverables.
 The knowledge lives in `references/`. **Read the matching file before acting,
@@ -19,7 +19,7 @@ them again. Anyone else using this skill: replace the Value column with yours.
 
 | Setting | Meaning | Value |
 | --- | --- | --- |
-| `ARTIFACTS_DIR` | Folder for Excel deliverables (test cases, FE QA) | `C:\Users\joshua.olin\Desktop\SDE Artifacts` |
+| `ARTIFACTS_DIR` | Folder for Excel deliverables (test cases, FE QA) | `C:\Users\<you>\Desktop\SDE Artifacts` |
 | `TC_TEMPLATE` | Master test case workbook, never edited directly | `<ARTIFACTS_DIR>\TC.xlsx` (sheets: Revision History, Dashboard, Module1, Reference) |
 | `ORG_TITLE` | Title line printed on every Excel deliverable | `ESSILORLUXOTTICA GLOBAL IT SHARED SERVICES CENTERS` |
 | `PROD_ORIGIN` / `PREVIEW_ORIGIN` | Origins compared by visual compare | `https://www.allaboutvision.com` / `https://preview-allaboutvision.luxgroup.net` |

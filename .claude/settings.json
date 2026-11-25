@@ -1,28 +1,42 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": [".claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "session"],
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": [".claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "prompt"],
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  }
+    "hooks":  {
+                  "SessionStart":  [
+                                       {
+                                           "hooks":  [
+                                                         {
+                                                             "type":  "command",
+                                                             "command":  "node",
+                                                             "args":  [
+                                                                          ".claude/hooks/attribution.mjs"
+                                                                      ],
+                                                             "timeout":  10
+                                                         },
+                                                         {
+                                                             "type":  "command",
+                                                             "command":  "node",
+                                                             "args":  [
+                                                                          ".claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs",
+                                                                          "session"
+                                                                      ],
+                                                             "timeout":  10
+                                                         }
+                                                     ]
+                                       }
+                                   ],
+                  "UserPromptSubmit":  [
+                                           {
+                                               "hooks":  [
+                                                             {
+                                                                 "type":  "command",
+                                                                 "command":  "node",
+                                                                 "args":  [
+                                                                              ".claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs",
+                                                                              "prompt"
+                                                                          ],
+                                                                 "timeout":  10
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+              }
 }

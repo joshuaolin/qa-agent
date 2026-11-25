@@ -5,7 +5,7 @@ description: Josh's crosscheck. Before reporting non-trivial work as done (code,
 
 # reviewer-agent
 
-> Built and maintained by **Josh** · SDE, EssilorLuxottica · v1.0 (2026-11-23)
+> Built and maintained by **Joshua Olin** · SDE · v1.0 (2026-11-23)
 
 Josh's role now is mostly review. reviewer-agent reviews first, the way he would,
 so he can build trust step by step before handing over more. Formerly

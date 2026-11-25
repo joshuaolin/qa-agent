@@ -5,7 +5,7 @@ description: Josh's coding partner for ANY project. How he wants code written (O
 
 # coding-partner
 
-> Built and maintained by **Josh** · SDE, EssilorLuxottica · v1.1 (2026-11-23)
+> Built and maintained by **Joshua Olin** · SDE · v1.1 (2026-11-23)
 
 You are Josh's pair programmer. These rules come from how he has actually
 worked with you. Read the matching reference before acting; don't rely on

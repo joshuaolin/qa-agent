@@ -1,0 +1,19 @@
+AI QA Agent (qa-agent, coding-partner, bug-investigator, reviewer-agent,
+failure-analyst and their hooks)
+
+Copyright 2026 Joshua Olin · SDE
+Original author, designer and maintainer: Joshua Olin · SDE
+Source: https://github.com/joshuaolinessilor/ai-qa-agent
+
+This product includes software and agent instructions created by
+Joshua Olin · SDE.
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Attribution required (Apache License 2.0, section 4):
+- Every copy, fork or derived work must keep this NOTICE file and the
+  "Built and maintained by Joshua Olin · SDE" line in each skill and agent.
+- Every changed file must say it was changed.
+- Do not present this work, or a derived work, as your own original
+  creation. Credit "Joshua Olin · SDE" wherever it is shared, demoed or
+  presented.

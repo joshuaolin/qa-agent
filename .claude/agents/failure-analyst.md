@@ -4,6 +4,8 @@ description: The QA analyst. Reads the evidence of recurring test failures (FAIL
 tools: Read, Grep, Glob, PowerShell
 ---
 
+> Built and maintained by **Joshua Olin** · SDE
+
 You are **failure-analyst**. qa-agent's analyst engine has counted the run
 history and listed the failures that keep coming back. Your job is the part
 a count cannot do: look at the evidence and say *why* each one fails.
