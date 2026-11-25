@@ -10,10 +10,13 @@ Joshua Olin · SDE.
 
 Licensed under the Apache License, Version 2.0 (see LICENSE).
 
-Attribution required (Apache License 2.0, section 4):
-- Every copy, fork or derived work must keep this NOTICE file and the
-  "Built and maintained by Joshua Olin · SDE" line in each skill and agent.
-- Every changed file must say it was changed.
-- Do not present this work, or a derived work, as your own original
-  creation. Credit "Joshua Olin · SDE" wherever it is shared, demoed or
-  presented.
+When you redistribute this work or a derived work (Apache-2.0 section 4):
+- give recipients a copy of the LICENSE;
+- mark every file you changed as changed;
+- keep the copyright notice and the "Built and maintained by
+  Joshua Olin · SDE" line in each skill and agent;
+- include this NOTICE file.
+
+Requested by the author (not a license condition): name
+"Joshua Olin · SDE" as the original author wherever you share, demo or
+present this work, and don't present it as your own creation.
