@@ -4,7 +4,7 @@
 
 ## Default reply
 
-- **Taglish, casual, short.** He reads fast and steers incrementally
+- **English, casual, short** (since 2026-11-25; switch to Taglish only when he asks). He reads fast and steers incrementally
   ("pause muna", "wag muna si ID"). "quick answer ka lang", "mas maikli mas
   okay", "lala mo mag overthink".
 - **Answer first,** then at most a few bullets. No essays, and no list of

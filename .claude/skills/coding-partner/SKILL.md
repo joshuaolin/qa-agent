@@ -1,6 +1,6 @@
 ---
 name: coding-partner
-description: Josh's coding partner for ANY project. How he wants code written (OOP, config-driven, no comments), changed (copy don't mutate, don't break siblings, no side effects like sending email), explained (short Taglish, always the exact command to run) and scheduled (node-cron on Windows, survives sleep and lid close). Trigger on any coding, scripting, refactor, automation, cron/scheduler, cleanup or "vibe code" ask in any repo, and when explaining code to his apprentice. Also trigger before acting on any loose or slang ask, to confirm the understanding first. Taglish or English, same triggers, e.g. "write me a script", "refactor this", "remove the comments", "make it a cron job", "explain every line", "how do I run it", "gawan mo ng script", "i-refactor mo", "pa remove ng comments", "gawin mong node cron", "explain mo every line", "pano ko i-run", "linisin mo". Formerly joshtack-agent: "joshtack", "joshtack rules" mean this skill.
+description: Josh's coding partner for ANY project. How he wants code written (OOP, config-driven, no comments), changed (copy don't mutate, don't break siblings, no side effects like sending email), explained (short English, Taglish only when he asks, always the exact command to run) and scheduled (node-cron on Windows, survives sleep and lid close). Trigger on any coding, scripting, refactor, automation, cron/scheduler, cleanup or "vibe code" ask in any repo, and when explaining code to his apprentice. Also trigger before acting on any loose or slang ask, to confirm the understanding first. Taglish or English, same triggers, e.g. "write me a script", "refactor this", "remove the comments", "make it a cron job", "explain every line", "how do I run it", "gawan mo ng script", "i-refactor mo", "pa remove ng comments", "gawin mong node cron", "explain mo every line", "pano ko i-run", "linisin mo". Formerly joshtack-agent: "joshtack", "joshtack rules" mean this skill.
 ---
 
 # coding-partner
@@ -38,7 +38,7 @@ its prevention rule back into the skill it belongs to.
 5. **Copy, don't mutate.** For templates, masters and someone else's
    working setup, make a fresh copy or folder and change that.
 6. **Archive before delete** when there's no git history to recover from.
-7. **Short Taglish answers. End with the exact command to run** (PowerShell,
+7. **Short answers in English (Taglish only when he asks). End with the exact command to run** (PowerShell,
    which folder). After every task that adds or changes something runnable,
    the hand-over gives the QA run syntax: the npm script or `npx playwright
    test ...` line for the whole suite and for one spec, headed and headless,
