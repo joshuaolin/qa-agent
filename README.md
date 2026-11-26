@@ -1,6 +1,6 @@
 # AI QA Agent
 
-> Created and maintained by **Joshua Olin** · SDE · [Apache-2.0](LICENSE) · credit required, see [NOTICE](NOTICE)
+> Maintained by **Joshua Olin** · SDE
 
 A Claude Code skill that works as the QA engineer of a Playwright repo.
 
@@ -89,10 +89,8 @@ it opens a project, so there is nothing to copy:
 2. To use them in another project, copy the four folders under
    `.claude/skills/` into that project's `.claude/skills/` and
    `.claude/agents/reviewer-agent.md` into its `.claude/agents/`, or into
-   `~/.claude/skills/` and `~/.claude/agents/` for every project. Copy
-   `.claude/hooks/attribution.mjs` too, and put `NOTICE` and `LICENSE` in that
-   `.claude/` folder (or at the project root). A copy doesn't update itself:
-   copy again after you pull changes.
+   `~/.claude/skills/` and `~/.claude/agents/` for every project. A copy
+   doesn't update itself: copy again after you pull changes.
 3. Open `.claude/skills/qa-agent/SKILL.md` and fill in **Project settings**
    (artifacts folder, Excel template, preview origin, schedule).
 4. For the Figma check, install its tools once:
@@ -116,7 +114,7 @@ it opens a project, so there is nothing to copy:
    ```json
    {
      "hooks": {
-       "SessionStart": [{ "hooks": [{ "type": "command", "command": "node", "args": ["<HOME>/.claude/hooks/attribution.mjs"], "timeout": 10 }, { "type": "command", "command": "node", "args": ["<HOME>/.claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "session"], "timeout": 10 }] }],
+       "SessionStart": [{ "hooks": [{ "type": "command", "command": "node", "args": ["<HOME>/.claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "session"], "timeout": 10 }] }],
        "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "node", "args": ["<HOME>/.claude/skills/bug-investigator/hooks/bug-investigator-hook.mjs", "prompt"], "timeout": 10 }] }]
      }
    }
@@ -152,23 +150,6 @@ If your repo looks different, edit the references. They are plain markdown.
 - **Keep it honest:** whenever the agent gets something wrong, fix the
   reference, not just the output.
 
-## Author and license
+## About
 
-Created, designed and maintained by **Joshua Olin** · SDE.
-
-Licensed under [Apache-2.0](LICENSE). You may use and change it freely.
-When you **redistribute** it or a derived work, section 4 of the license
-requires you to:
-
-| You must | How |
-| --- | --- |
-| Pass on the license | Include [LICENSE](LICENSE) |
-| Keep the credit | Keep the copyright notice, [NOTICE](NOTICE) and the "Built and maintained by Joshua Olin · SDE" line in every skill and agent |
-| Mark your changes | Say in each changed file that you changed it |
-
-Requested by the author, not a license condition: name "Joshua Olin · SDE"
-as the original author wherever you share, demo or present it.
-
-Every Claude session in this repo shows the credit at start
-(.claude/hooks/attribution.mjs). If the NOTICE, the LICENSE or a signature
-line is removed, the session opens with an attribution warning instead.
+Internal tooling, EssilorLuxottica. Maintained by **Joshua Olin** · SDE.
