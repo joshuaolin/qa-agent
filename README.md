@@ -149,7 +149,3 @@ If your repo looks different, edit the references. They are plain markdown.
   skill must sit directly under `.claude/skills/` or it won't be suggested.
 - **Keep it honest:** whenever the agent gets something wrong, fix the
   reference, not just the output.
-
-## About
-
-Internal tooling, EssilorLuxottica. Maintained by **Joshua Olin** · SDE.
