@@ -1,6 +1,6 @@
 ---
 name: reviewer-agent
-description: Josh's crosscheck. Before reporting non-trivial work as done (code, scripts, QA deliverables, skill/config/hook edits), send it to the reviewer-agent subagent, fix or answer its findings, show Josh the verdict, and log the review in the trust ledger so he can see how far the review can be trusted before he automates more. Trigger before any "tapos na" on work bigger than a one-line chore, and when Josh says "review mo", "crosscheck", "i-x mo", "pa-check kay x", "review this", "double-check it", "have x look at it", or asks how much to trust the reviews. Formerly x-agent: "x", "x-agent", "kay x", "pa-review kay reviewer" mean this skill.
+description: Josh's crosscheck. Before reporting work as done that touches live or scheduled code, shared code, hooks/settings, or a QA deliverable for others (not docs, cases or small config edits), send it to the reviewer-agent subagent, fix or answer its findings, show Josh the verdict, and log the review in the trust ledger so he can see how far the review can be trusted before he automates more. Trigger before any "tapos na" on work bigger than a one-line chore, and when Josh says "review mo", "crosscheck", "i-x mo", "pa-check kay x", "review this", "double-check it", "have x look at it", or asks how much to trust the reviews. Formerly x-agent: "x", "x-agent", "kay x", "pa-review kay reviewer" mean this skill.
 ---
 
 # reviewer-agent
@@ -16,12 +16,19 @@ The reviewer itself is the subagent `.claude/agents/reviewer-agent.md` (or `~/.c
 
 ## When
 
+Since 2026-11-27 reviews are kept for work where a mistake reaches someone
+else or runs unattended, to save tokens. The rule, with the request behind
+it, is the directive `directive-review-live-and-shared-only`.
+
 | Work | Review |
 | --- | --- |
-| Code, scripts, POM/specs, shared `main/` or `pom/` changes | Always |
-| QA deliverables (Excel, test cases, Figma findings) | Always |
-| Any file under `.claude/skills` or `.claude/agents` (a case file and one new section included), hooks, settings, schedulers | Always |
-| A bug-investigator rule being promoted into a skill | Always, before it goes to Josh for his go |
+| Code that runs live or on a schedule: batch wrappers, Jira or email steps, the live login monitor, schedulers | Always |
+| Shared `main/` or `pom/` code, specs, scripts other code depends on | Always |
+| Hooks, `settings.json`, agent definitions, skill scripts (`.cjs`/`.mjs`/`.py`) | Always |
+| QA deliverables that go to other people (Excel, test cases, Figma findings) | Always |
+| Docs only: skill references, SKILL.md wording, READMEs, cases, memory, the ledger | Skip |
+| Small config edits: one value, a recipients list, a flag, a date | Skip, but say what changed and how it was checked |
+| A bug-investigator rule being promoted into a skill (a doc edit) | Skip the review; it still needs the owner's go |
 | One-line chore, a pure answer, a file listing | Skip |
 | Josh says "skip review" / "wag na i-review" | Skip, note it in the ledger |
 

@@ -30,7 +30,7 @@ class Casebook {
       const line = lines.find((l) => l.startsWith(prefix));
       return line ? line.slice(prefix.length).trim() : '';
     };
-    return { name, type: field('type:'), rule: field('Rule:') };
+    return { name, type: field('type:'), rule: field('Rule:'), short: field('Short:') };
   }
 }
 
@@ -66,11 +66,11 @@ class BugInvestigatorHook {
   }
 
   sessionContext() {
-    const format = (c) => `- ${c.name}: ${c.rule}`;
+    const format = (c) => `- ${c.name}: ${c.short || c.rule}`;
     const directives = this.casebook.directives().map(format);
     const latest = this.casebook.latest(BugInvestigatorHook.LATEST_COUNT).map(format);
     const blocks = [];
-    if (directives.length) blocks.push("The owner's standing directives (always apply):", ...directives);
+    if (directives.length) blocks.push("The owner's standing directives (always apply; a long rule is shown as its Short: line, so read the case file's Rule: before working in that area):", ...directives);
     if (latest.length) blocks.push('bug-investigator casebook, latest rules (check before acting in the same area):', ...latest);
     return blocks.join('\n');
   }

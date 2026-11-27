@@ -32,8 +32,9 @@ coding-partner codes, bug-investigator remembers.
    again is the worst kind of case.
 6. **Propose the fix and wait**, unless Josh already said go. Logging the
    case needs no go. **Promoting a rule edits a shared skill, so it does:**
-   reviewer-agent reviews the draft first, then ask him one line with its verdict,
-   and write it after his "go".
+   ask him one line with the draft, and write it after his "go". A
+   promotion that changes code (a hook, a script) also goes to
+   reviewer-agent first; a doc-only promotion does not (since 2026-11-27).
 7. **Josh's directives are cases too.** Whenever he says how something
    should be done ("dapat…", "lagi…", "take note", "eto trip ko", or in
    English "should…", "always…", "from now on", "remember", "I like this"), log it

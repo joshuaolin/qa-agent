@@ -55,8 +55,10 @@ its prevention rule back into the skill it belongs to.
    final say. Proceed directly only when the ask is exact or you're sure.
 12. **A mistake or correction becomes a case.** Load bug-investigator, log it,
    and promote the rule so it doesn't happen twice.
-13. **Crosscheck before "tapos na".** Non-trivial work goes through
-   reviewer-agent first; show Josh the verdict and log it in its ledger.
+13. **Crosscheck before "tapos na".** Work that runs live or on a schedule,
+   shared code, hooks/settings and QA deliverables go through reviewer-agent
+   first; show Josh the verdict and log it in its ledger. Docs, cases and
+   small config edits skip it (see reviewer-agent "When").
 14. **One folder per website or app under test.** A new site gets its own
    folder in every layer (tests, pages, data, and its engine if it has one),
    named after the site, never files dropped loose in the shared root. The
