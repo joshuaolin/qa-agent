@@ -467,7 +467,7 @@ class TcWriter:
 
     def dashboard(self, wb, today):
         ws = wb["Dashboard"]
-        ws["A10"], ws["F10"], ws["G10"], ws["D12"] = self.config["project"], today, today, self.AUTHOR
+        ws["A10"], ws["F10"], ws["G10"], ws["D12"] = self.config["project"], today, today, self.AUTHOR if today else None
         ws["F10"].number_format = ws["G10"].number_format = "yyyy-mm-dd"
 
     def revision_history(self, wb):
@@ -496,13 +496,19 @@ class TcWriter:
         precondition = Itemized("all rows", "precondition").numbered(self.config["precondition"])
         for col, width in self.WIDTHS.items():
             ws.column_dimensions[col].width = width
+        pending = self.config.get("notExecuted")
         for n, row in enumerate(self.config["rows"]):
             r = FIRST_ROW + n
             tc_id = f"TC-{self.config['ticket']}-{row['seq']:02d}"
-            status, lines, remark, evidence = self.outcome.verdict(row["seq"])
-            sheet.add(tc_id, lines, evidence)
+            if pending:
+                notes = Itemized(tc_id, "remark").items(self.outcome.review.get(str(row["seq"]), {}).get("remark", []))
+                status, actual = "Not Started", pending
+                remark = "\n".join([f"qa-agent: {pending}"] + [Itemized.BULLET + x for x in notes])
+            else:
+                status, lines, remark, evidence = self.outcome.verdict(row["seq"])
+                sheet.add(tc_id, lines, evidence)
+                actual = summary.text(lines, tc_id)
             self.copy_style(ws, STYLE_ROW, r)
-            actual = summary.text(lines, tc_id)
             data = Itemized(tc_id, "data").items(row["data"]) + self.config.get("dataCommon", [])
             expected = Itemized(tc_id, "expected").bullets(row["expected"])
             values = {
@@ -510,11 +516,12 @@ class TcWriter:
                 "D": tc_id, "E": precondition,
                 "F": row["name"], "G": Itemized(tc_id, "data").bullets([d.replace("{locales}", self.config["locales"]) for d in data]), "H": row["steps"],
                 "I": expected, "J": status, "K": actual, "L": self.AUTHOR,
-                "M": remark, "O": today, "P": today, "Q": self.AUTHOR,
+                "M": remark, "O": None if pending else today, "P": None if pending else today, "Q": None if pending else self.AUTHOR,
             }
             for col, value in values.items():
                 ws[f"{col}{r}"] = value
-            ws[f"K{r}"].hyperlink = Hyperlink(ref=f"K{r}", location=f"'Evidence'!A{sheet.anchors[tc_id]}", tooltip=f"Open what was seen and the screenshots for {tc_id}")
+            if not pending:
+                ws[f"K{r}"].hyperlink = Hyperlink(ref=f"K{r}", location=f"'Evidence'!A{sheet.anchors[tc_id]}", tooltip=f"Open what was seen and the screenshots for {tc_id}")
             ws[f"O{r}"].number_format = ws[f"P{r}"].number_format = "yyyy-mm-dd"
             k_lines = sum(max(1, -(-len(line) // self.K_CHARS_PER_LINE)) for line in actual.split("\n"))
             wrapped = {col: self.wrapped_lines(ws, col, ws[f"{col}{r}"].value) for col in "EGHIM"}
@@ -525,7 +532,7 @@ class TcWriter:
         self.extend_validations(ws, last)
         self.extend_status_colors(ws, last)
         self.revision_history(wb)
-        self.dashboard(wb, today)
+        self.dashboard(wb, None if pending else today)
         wb.save(self.out)
         self.verify(len(self.config["rows"]))
 
@@ -548,7 +555,8 @@ class TcWriter:
 if __name__ == "__main__":
     ticket_dir = Path(sys.argv[1]).resolve()
     config = json.loads((ticket_dir / "tc_rows.json").read_text(encoding="utf-8-sig"))
-    results = json.loads((ticket_dir / "results.json").read_text(encoding="utf-8-sig"))
+    results_path = ticket_dir / "results.json"
+    results = json.loads(results_path.read_text(encoding="utf-8-sig")) if results_path.exists() else []
     review_path = ticket_dir / "review.json"
     review = json.loads(review_path.read_text(encoding="utf-8-sig")) if review_path.exists() else {}
     TcWriter(sys.argv[2], sys.argv[3], config, results, review).run(ticket_dir / "archive")
